@@ -1,0 +1,163 @@
+# Italian (Italy) translations for PROJECT.
+# Copyright (C) 2021 ORGANIZATION
+# This file is distributed under the same license as the PROJECT project.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2021.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: PROJECT VERSION\n"
+"Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
+"POT-Creation-Date: 2022-05-26 13:40+0200\n"
+"PO-Revision-Date: 2021-10-19 18:49+0200\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: it_IT\n"
+"Language-Team: it_IT <LL@li.org>\n"
+"Plural-Forms: nplurals=2; plural=(n != 1)\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.9.1\n"
+
+#: app.py:31 app.py:36
+msgid "Ehrenfest model"
+msgstr "modello di Ehrenfest"
+
+#: app.py:37
+msgid "observe gas expansion"
+msgstr "osserva l'espansione di un gas"
+
+#: app.py:42 app.py:207
+msgid "steps"
+msgstr "turni"
+
+#: app.py:57
+msgid "generate"
+msgstr "genera"
+
+#: app.py:87
+msgid ""
+"\n"
+"        The **Ehrenfest model** is a simple representation of what "
+"happens during the expansion of a perfect gas. In this applet you can "
+"choose how many particles to put initially in box A and box B and how "
+"many steps of the model to simulate. After that, you can create the "
+"simulation by clicking on **generate** and observe what happens clicking "
+"on **play**. The plot  on the right top shows the fraction of particles,"
+" $f$, in the boxes ad each instant:  \n"
+"        $$f_A = \\frac{N_A}{N}$$\n"
+"        while the plot a the right bottom shows the probability "
+"distribution of a **fluctuation**, at each instant. The fluctuation is "
+"the difference of population between the boxes divided by the total "
+"number of particles in the system:  \n"
+"        \n"
+"        $$fluct = \\frac{N_A- N_B}{N}$$\n"
+"        \n"
+"        "
+msgstr ""
+"\n"
+"        Il **modello di Ehrenfest** è una semplice rappresentazione di ciò che "
+"succede durante l'espansione di un gas perfetto. In questa applet puoi "
+"scegliere quante particelle mettere inizialmente nella scatola A e nella scatola B e quanti "
+"turni del modello simulare. Una volta fatto questo, puoi creare la"
+"simulazione facendo click su **genera** e osservare cosa succede facendo click "
+"su **play**. Il diagramma in alto a destra mostra la frazione di particelle,"
+" $f$, nelle scatole in ogni istante:  \n"
+"        $$f_A = \\frac{N_A}{N}$$\n"
+"        mentre il diagramma in basso a destra mostra la distribuzione di probabilità "
+"di una **fluttuazione**, ad ogni istante. La fluttuazione è "
+"la differenza di popolazione fra le scatole, divisa il numero "
+"totale di particelle nel sistema:  \n"
+"        \n"
+"        $$fluct = \\frac{N_A- N_B}{N}$$\n"
+"        \n"
+"        "
+
+#: app.py:95
+msgid "less info"
+msgstr "meno informazioni"
+
+#: app.py:98
+msgid "more info"
+msgstr "più informazioni"
+
+#: app.py:181
+msgid "Step: "
+msgstr "Turno: "
+
+#: app.py:209
+msgid "fraction"
+msgstr "frazione"
+
+#: app.py:212
+msgid "fluctuation"
+msgstr "fluttuazione"
+
+#: app.py:214
+msgid "probability"
+msgstr "probabilità"
+
+#~ msgid "nA"
+#~ msgstr "nA"
+
+#~ msgid "nB"
+#~ msgstr "nB"
+
+#~ msgid "duration"
+#~ msgstr "durata"
+
+#~ msgid ""
+#~ "\n"
+#~ "        The **Ehrenfest model** is a "
+#~ "simple representation of what happens "
+#~ "during the expansion of a perfect "
+#~ "gas. In this applet you can choose"
+#~ " how many particles to put initially"
+#~ " in box A and box B and "
+#~ "how many steps of the model to "
+#~ "simulate. After that, you can create "
+#~ "the simulation by clicking on "
+#~ "**generate** and observe what happens "
+#~ "clicking on **play**. The plots  on "
+#~ "the right top shows the number of"
+#~ " particles in the boxes ad each "
+#~ "instant, while the plot a the "
+#~ "right bottom shows the **fluctuation**, "
+#~ "$f$ at each instant. The fluctuation "
+#~ "is the difference of population between"
+#~ " the boxex divided by the total "
+#~ "number of particles in the system:"
+#~ "  \n"
+#~ "        \n"
+#~ "        $$f = \\frac{N_A- N_B}{N}$$\n"
+#~ "        \n"
+#~ "        "
+#~ msgstr ""
+
+#~ msgid ""
+#~ "\n"
+#~ "        The **Ehrenfest model** is a "
+#~ "simple representation of what happens "
+#~ "during the expansion of a perfect "
+#~ "gas. In this applet you can choose"
+#~ " how many particles to put initially"
+#~ " in box A and box B and "
+#~ "how many steps of the model to "
+#~ "simulate. After that, you can create "
+#~ "the simulation by clicking on "
+#~ "**generate** and observe what happens "
+#~ "clicking on **play**. The plots  on "
+#~ "the right top shows the number of"
+#~ " particles in the boxes ad each "
+#~ "instant, while the plot a the "
+#~ "right bottom shows the **fluctuation**, "
+#~ "$f$ at each instant. The fluctuation "
+#~ "is the difference of population between"
+#~ " the boxes divided by the total "
+#~ "number of particles in the system:"
+#~ "  \n"
+#~ "        \n"
+#~ "        $$f = \\frac{N_A- N_B}{N}$$\n"
+#~ "        \n"
+#~ "        "
+#~ msgstr ""
+

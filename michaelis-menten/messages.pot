@@ -1,0 +1,99 @@
+# Translations template for PROJECT.
+# Copyright (C) 2023 ORGANIZATION
+# This file is distributed under the same license as the PROJECT project.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2023.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PROJECT VERSION\n"
+"Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
+"POT-Creation-Date: 2023-04-29 00:08+0200\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.10.3\n"
+
+#: app.py:39 app.py:135
+msgid "Michaelis-Menten kinetics"
+msgstr ""
+
+#: app.py:101
+msgid "competitive"
+msgstr ""
+
+#: app.py:102
+msgid "noncompetitive"
+msgstr ""
+
+#: app.py:103
+msgid "uncompetitive"
+msgstr ""
+
+#: app.py:108
+msgid "Delete"
+msgstr ""
+
+#: app.py:119
+msgid "Add plot"
+msgstr ""
+
+#: app.py:136
+msgid "explore how changing parameters affects the kinetics"
+msgstr ""
+
+#: app.py:175
+msgid ""
+"\n"
+"        **Michaelis-Menten kinetics** is a kinetic mechanism describing "
+"simple enzyme catalized reactions in which a substrate, $\\text{S}$, is "
+"converted in a product, $\\text{P}$, in the presence of an enzyme, "
+"$\\text{E}$.\n"
+"        \n"
+"        This mechanism was deveoped to explain the plot of the dependance"
+" of the initial rate, $v_0$, as a function of substrate concentration "
+"$[\\text{S}]$ and can be can be schematized as\n"
+"        \n"
+"        $$\\text{E} + \\text{S} "
+"\\overset{k_1}{\\underset{k_{-1}}{\\rightleftharpoons}} \\text{ES} "
+"\\overset{k_2}{\\rightarrow} \\text{E} + \\text{P}$$\n"
+"        \n"
+"        In such mechanism $v_0$ will be\n"
+"        \n"
+"        $$v_0 = \\frac{k_2[\\text{E}]_0[\\text{S}]}{K_M + [\\text{S}]}$$\n"
+"        \n"
+"        where $[\\text{E}]_0$ is the initial concentratin of the enzyme "
+"and $K_M$ is the **Michaelis constant**\n"
+"        \n"
+"        $$K_M = \\frac{k_{-1}+k_2}{k_1}$$\n"
+"        \n"
+"        At high $[\\text{S}]$ values the plot tends to a saturation "
+"value, the **limiting rate** $v_{max}$:\n"
+"        \n"
+"        $$v_{max}=k_2[\\text{E}]_0$$\n"
+"        \n"
+"        In the presence of an **inhibitor**, $\\text{I}$, the enzyme "
+"efficency can be reduced. There are different types of inhibitors with "
+"different mechanisms and kinetic effects.\n"
+"        \n"
+"        The analysis of kinetcis inhibition is often conducted using the "
+"**Lineweaver-Burk plots** of $\\frac{1}{v_0} vs. \\frac{1}{[\\text{S}]}$"
+"\n"
+"        \n"
+"        "
+"$$\\frac{1}{v_0}=\\frac{K_M}{v_{max}[\\text{S}]}+\\frac{1}{v_{max}}$$\n"
+"        \n"
+"        "
+msgstr ""
+
+#: app.py:201
+msgid "less info"
+msgstr ""
+
+#: app.py:204
+msgid "more info"
+msgstr ""
+

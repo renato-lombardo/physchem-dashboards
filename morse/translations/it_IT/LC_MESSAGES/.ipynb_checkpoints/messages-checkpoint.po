@@ -1,0 +1,48 @@
+# Italian (Italy) translations for PROJECT.
+# Copyright (C) 2021 ORGANIZATION
+# This file is distributed under the same license as the PROJECT project.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2021.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: PROJECT VERSION\n"
+"Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
+"POT-Creation-Date: 2021-06-17 14:10+0200\n"
+"PO-Revision-Date: 2021-06-17 14:26+0200\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: it_IT\n"
+"Language-Team: it_IT <LL@li.org>\n"
+"Plural-Forms: nplurals=2; plural=(n != 1)\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.9.1\n"
+
+#: app.py:58
+msgid "Delete"
+msgstr "Elimina"
+
+#: app.py:67
+msgid "distance"
+msgstr "distanza"
+
+#: app.py:78
+msgid "add plot"
+msgstr "aggiungi grafico"
+
+#: app.py:87
+msgid "Bond potential"
+msgstr "Potenziale di legame"
+
+#: app.py:88
+msgid "explore how each curve changes on changing the parameters"
+msgstr "espora come ogni curva varia al variare dei parametri"
+
+#: app.py:175
+msgid "distance, Å"
+msgstr "distanza, Å"
+
+#: app.py:176
+msgid "energy, eV"
+msgstr "energia, eV""
+

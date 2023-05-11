@@ -1,0 +1,89 @@
+# Translations template for PROJECT.
+# Copyright (C) 2022 ORGANIZATION
+# This file is distributed under the same license as the PROJECT project.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2022.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PROJECT VERSION\n"
+"Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
+"POT-Creation-Date: 2022-05-16 16:43+0200\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.9.1\n"
+
+#: app.py:45 app.py:53
+msgid "Boltzmann distribution"
+msgstr ""
+
+#: app.py:51
+msgid "Add plot"
+msgstr ""
+
+#: app.py:54
+msgid "explore how each distribution changes on changing the parameters"
+msgstr ""
+
+#: app.py:110
+msgid "Max energy (eV)"
+msgstr ""
+
+#: app.py:115
+msgid "n levels"
+msgstr ""
+
+#: app.py:121
+msgid "temperature (K)"
+msgstr ""
+
+#: app.py:126
+msgid "delete"
+msgstr ""
+
+#: app.py:138
+msgid "energy"
+msgstr ""
+
+#: app.py:139
+msgid "pop fract"
+msgstr ""
+
+#: app.py:230
+msgid ""
+"\n"
+"        **Boltzmann distribution** describes how $N$ molecules are "
+"distributed on different energy levels, depending on temperature. The "
+"fraction of molecules with energi $E_1$ is:  \n"
+"        \n"
+"        $$\\frac{N_1}{N} = \\frac{e^{-\\frac{E_1}{kT}}}{Q}$$  \n"
+"        \n"
+"        Where $Q$ is the **molecular partition function**:  \n"
+"        \n"
+"        $$Q = \\sum_{i} e^{-\\frac{E_i}{kT}}$$  \n"
+"        \n"
+"        It is a _normalization factor_ that ensures that the total "
+"probability will be 1.\n"
+"        "
+msgstr ""
+
+#: app.py:241
+msgid "less info"
+msgstr ""
+
+#: app.py:244
+msgid "more info"
+msgstr ""
+
+#: app.py:293
+msgid "population fraction"
+msgstr ""
+
+#: app.py:294
+msgid "level"
+msgstr ""
+

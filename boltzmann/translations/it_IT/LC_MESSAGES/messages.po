@@ -1,0 +1,124 @@
+# Italian (Italy) translations for PROJECT.
+# Copyright (C) 2021 ORGANIZATION
+# This file is distributed under the same license as the PROJECT project.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2021.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: PROJECT VERSION\n"
+"Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
+"POT-Creation-Date: 2022-05-16 16:43+0200\n"
+"PO-Revision-Date: 2021-10-19 17:15+0200\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: it_IT\n"
+"Language-Team: it_IT <LL@li.org>\n"
+"Plural-Forms: nplurals=2; plural=(n != 1)\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.9.1\n"
+
+#: app.py:45 app.py:53
+msgid "Boltzmann distribution"
+msgstr "Distribuzione di Boltzmann"
+
+#: app.py:51
+msgid "Add plot"
+msgstr "Aggiungi grafico"
+
+#: app.py:54
+msgid "explore how each distribution changes on changing the parameters"
+msgstr "osserva come ogni distribuzione cambi al variare dei parametri"
+
+#: app.py:110
+msgid "Max energy (eV)"
+msgstr "Energia max (eV)"
+
+#: app.py:115
+msgid "n levels"
+msgstr "num. livelli"
+
+#: app.py:121
+msgid "temperature (K)"
+msgstr "temperatura (K)"
+
+#: app.py:126
+msgid "delete"
+msgstr "elimina"
+
+#: app.py:138
+msgid "energy"
+msgstr "energia"
+
+#: app.py:139
+msgid "pop fract"
+msgstr "fraz. pop"
+
+#: app.py:230
+msgid ""
+"\n"
+"        **Boltzmann distribution** describes how $N$ molecules are "
+"distributed on different energy levels, depending on temperature. The "
+"fraction of molecules with energi $E_1$ is:  \n"
+"        \n"
+"        $$\\frac{N_1}{N} = \\frac{e^{-\\frac{E_1}{kT}}}{Q}$$  \n"
+"        \n"
+"        Where $Q$ is the **molecular partition function**:  \n"
+"        \n"
+"        $$Q = \\sum_{i} e^{-\\frac{E_i}{kT}}$$  \n"
+"        \n"
+"        It is a _normalization factor_ that ensures that the total "
+"probability will be 1.\n"
+"        "
+msgstr ""
+"\n"
+"        La **distribuzione di Boltzmann** descrive come $N$ molecole si "
+"distribuiscono su vari livelli energetici, in funzione della temperatura. La "
+"frazione di molecole con energia $E_1$ è:  \n"
+"        \n"
+"        $$\\frac{N_1}{N} = \\frac{e^{-\\frac{E_1}{kT}}}{Q}$$  \n"
+"        \n"
+"        Dove $Q$ è la **funzione di partizione molecolare**:  \n"
+"        \n"
+"        $$Q = \\sum_{i} e^{-\\frac{E_i}{kT}}$$  \n"
+"        \n"
+"        Si tratta di un _fattore di normalizzazione_ che assicura che la somma totale "
+"della probabilità sia pari a 1.\n"
+"        "
+
+#: app.py:241
+msgid "less info"
+msgstr ""
+
+#: app.py:244
+msgid "more info"
+msgstr ""
+
+#: app.py:293
+msgid "population fraction"
+msgstr "frazione della popolazione"
+
+#: app.py:294
+msgid "level"
+msgstr "livello"
+
+#~ msgid ""
+#~ "\n"
+#~ "        **Boltzmann distribution** describes "
+#~ "how $N$ molecules are distributed "
+#~ "depending on temperature. The fraction "
+#~ "of molecules with energi $E_1$ is:"
+#~ "  \n"
+#~ "        \n"
+#~ "        $$\\frac{N_1}{N} = \\frac{e^{-\\frac{E_1}{kT}}}{Q}$$  \n"
+#~ "        \n"
+#~ "        Where $Q$ is the **molecular partition function**:  \n"
+#~ "        \n"
+#~ "        $$Q = \\sum_{i} e^{-\\frac{E_i}{kT}}$$  \n"
+#~ "        \n"
+#~ "        It is a _normalization factor_"
+#~ " that ensures that the total "
+#~ "probability will be 1.\n"
+#~ "        "
+#~ msgstr ""
+

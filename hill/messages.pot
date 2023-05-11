@@ -1,0 +1,83 @@
+# Translations template for PROJECT.
+# Copyright (C) 2023 ORGANIZATION
+# This file is distributed under the same license as the PROJECT project.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2023.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PROJECT VERSION\n"
+"Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
+"POT-Creation-Date: 2023-05-11 22:44+0200\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.10.3\n"
+
+#: app.py:35 app.py:74
+msgid "Hill equation"
+msgstr ""
+
+#: app.py:42
+msgid "Bohr effect"
+msgstr ""
+
+#: app.py:43
+msgid "p50 = -- mbar"
+msgstr ""
+
+#: app.py:53
+msgid "Root effect"
+msgstr ""
+
+#: app.py:54
+msgid "n = --"
+msgstr ""
+
+#: app.py:64
+msgid "Delete"
+msgstr ""
+
+#: app.py:71
+msgid "Add plot"
+msgstr ""
+
+#: app.py:75
+msgid "explore how changing parameters affects the saturation of hemoglobin"
+msgstr ""
+
+#: app.py:120
+msgid ""
+"\n"
+"        The **Hill-Langmuir equation** describes the interaction of a "
+"ligand, $L$, with a binding site. Specifically, it relates the "
+"**saturation**, $s$, to the ligand concentration.\n"
+"\n"
+"        $$s = \\frac{[L]^n}{([L]^n + K_d^n)}$$\n"
+"\n"
+"        where $[L]$ is the molar concentration of the ligand, $K_d$ is "
+"the dissociation constant, and $n$ is the **Hill coefficient**, which "
+"describes the cooperativity of the binding process.\n"
+"\n"
+"        The saturation corresponds to the ratio of occupied binding "
+"sites, $N_L$, to the total number of binding sites, $N$:\n"
+"\n"
+"        $$ s = \\frac{N_L}{N}\n"
+"        "
+msgstr ""
+
+#: app.py:131
+msgid "less info"
+msgstr ""
+
+#: app.py:134
+msgid "more info"
+msgstr ""
+
+#: app.py:197
+msgid "saturation"
+msgstr ""
+

@@ -1,0 +1,173 @@
+# Italian (Italy) translations for PROJECT.
+# Copyright (C) 2021 ORGANIZATION
+# This file is distributed under the same license as the PROJECT project.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2021.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: PROJECT VERSION\n"
+"Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
+"POT-Creation-Date: 2023-04-28 10:40+0200\n"
+"PO-Revision-Date: 2021-10-28 12:45+0200\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: it_IT\n"
+"Language-Team: it_IT <LL@li.org>\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.10.3\n"
+
+#: app.py:31 app.py:105
+msgid "Carnot cycle"
+msgstr "Ciclo di Carnot"
+
+#: app.py:40
+msgid "T cold /K"
+msgstr "T fredda /K"
+
+#: app.py:44
+msgid "T hot /K"
+msgstr "T calda /K"
+
+#: app.py:48
+msgid "V₁ /㎥"
+msgstr "V₁ /㎥"
+
+#: app.py:52
+msgid "V₂ /㎥"
+msgstr "V₂ /㎥"
+
+#: app.py:63
+msgid "η = --"
+msgstr "η = --"
+
+#: app.py:64
+msgid "w = --"
+msgstr "w = --"
+
+#: app.py:74
+msgid "V /㎥"
+msgstr "V /㎥"
+
+#: app.py:75 app.py:209
+msgid "p /Pa"
+msgstr "p /Pa"
+
+#: app.py:76
+msgid "T /K"
+msgstr "T /K"
+
+#: app.py:89
+msgid "w /J"
+msgstr "w /J"
+
+#: app.py:90
+msgid "q /J"
+msgstr "q /J"
+
+#: app.py:91
+msgid "∆U /J"
+msgstr "∆U /J"
+
+#: app.py:92
+msgid "∆S /J"
+msgstr "∆S /J"
+
+#: app.py:106
+msgid ""
+"explore how the thermodynamics parameters change on changing the volumes "
+"and/or temperatures"
+msgstr ""
+"Esplora come variano i parametri termodinamici variando i volumi e/o le "
+"temperature"
+
+#: app.py:148
+msgid ""
+"\n"
+"        **Carnot cycle** describes the thermodynamical behavior of the "
+"**Carnot engine**.\n"
+"        It consists of four steps, each performed in a reversible way.\n"
+"        \n"
+"        The total change of each state function ($U$, $S$, $p$, $V$, $T$)"
+"  during a cycle is zero, being the initial and final point coincident. "
+"However, the amounts of work and heat (that are path functions) are not "
+"zero.\n"
+"        \n"
+"        The total amount of work, $w$, corresponds to the difference "
+"bewteen the heat absorbed from the hot reservoir, $q_H$, and the heat "
+"trasferred to the cold reservoir, $q_C$:\n"
+"        \n"
+"        $$w = q_H - q_C$$\n"
+"        \n"
+"        The efficiency of any engine, $\\eta$, is defined as:\n"
+"        \n"
+"        $$\\eta = \\frac{w}{q_H} = \\frac{q_H - q_C}{q_H}$$\n"
+"        \n"
+"        For a Carnot engine it is possible to derive that $\\eta$ is "
+"also:\n"
+"        \n"
+"        $$\\eta = \\frac{T_H - T_C}{T_H} = 1 - \\frac{T_C}{T_H}$$\n"
+"        \n"
+"        "
+msgstr ""
+"\n"
+"        Il **ciclo di Carnot** descrive il comportamento termodinamico di"
+"una **macchina di Carnot**\n"
+"        Esso consiste di quattro stadi, ognuno condotto in maneira reversibile\n"
+"        \n"
+"        La variazione totale di ognuna delle funzioni di stato ($U$, $S$, $p$, $V$, $T$)"
+"durante un ciclo è pari a zero, dato che il punto inziiale e finale coincidono."
+"Tuttavia, la quantità di lavoro e calore (che sono funzioni di percorso) non sono"
+"zero.\n"
+"        \n"
+"        La quantità totale di lavoro, $w$, corrisponde alla differenza"
+"fra il calore assorbito dalla riserva calda, $q_H$, e il calore "
+"trasferito alla riserva fredda, $q_C$:\n"
+"        \n"
+"        $$w = q_H - q_C$$\n"
+"        \n"
+"        L'efficenza di qualsiasi macchina, $\\eta$, è definita come:\n"
+"        \n"
+"        $$\\eta = \\frac{w}{q_H} = \\frac{q_H - q_C}{q_H}$$\n"
+"        \n"
+"        Per una macchina di Carnot è possibile derivare che $\\eta$ è
+"anche:\n"
+"        \n"
+"        $$\\eta = \\frac{T_H - T_C}{T_H} = 1 - \\frac{T_C}{T_H}$$\n"
+"        \n"
+"        "
+
+
+#: app.py:167
+msgid "less info"
+msgstr "meno informazioni"
+
+#: app.py:170
+msgid "more info"
+msgstr "più informazioni"
+
+#: app.py:203
+msgid "Isothermal expansion"
+msgstr "Esapansione isoterma"
+
+#: app.py:203
+msgid "Adiabatic expansion"
+msgstr "Espansione adiabatica"
+
+#: app.py:203
+msgid "Isothermal compression"
+msgstr "Compressione isoterma"
+
+#: app.py:203
+msgid "Adiabatic compression"
+msgstr "Compressione adiabatica"
+
+#: app.py:209
+msgid "V/ ㎥"
+msgstr "V/ ㎥"
+
+#: app.py:213
+msgid "state"
+msgstr "stadio"
+

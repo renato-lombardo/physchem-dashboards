@@ -1,0 +1,10 @@
+flask
+flask-babel
+dash
+dash_daq
+dash-bootstrap-components
+dash_defer_js_import
+gunicorn
+numpy
+pandas
+plotly

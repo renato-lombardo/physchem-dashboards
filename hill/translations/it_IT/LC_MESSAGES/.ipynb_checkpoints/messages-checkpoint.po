@@ -1,0 +1,56 @@
+# Italian (Italy) translations for PROJECT.
+# Copyright (C) 2021 ORGANIZATION
+# This file is distributed under the same license as the PROJECT project.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2021.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: PROJECT VERSION\n"
+"Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
+"POT-Creation-Date: 2021-11-15 23:39+0100\n"
+"PO-Revision-Date: 2021-11-15 23:39+0100\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: it_IT\n"
+"Language-Team: it_IT <LL@li.org>\n"
+"Plural-Forms: nplurals=2; plural=(n != 1)\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.9.1\n"
+
+#: app.py:35 app.py:74
+msgid "Hill equation"
+msgstr "Equazione di Hill"
+
+#: app.py:42
+msgid "Bohr effect"
+msgstr "Effetto Bohr"
+
+#: app.py:43
+msgid "p50 = -- mbar"
+msgstr "p50 = -- mbar"
+
+#: app.py:53
+msgid "Root effect"
+msgstr "Effetto Root"
+
+#: app.py:54
+msgid "n = --"
+msgstr "n = --"
+
+#: app.py:64
+msgid "Delete"
+msgstr "Elimina"
+
+#: app.py:71
+msgid "Add plot"
+msgstr "Aggiungi grafico"
+
+#: app.py:75
+msgid "explore how changing parameters affects the saturation of hemoglobin"
+msgstr "Esplora come cambiando i parametri varia la saturazione dell'emoglobina"
+
+#: app.py:166
+msgid "saturation"
+msgstr "saturazione"
+

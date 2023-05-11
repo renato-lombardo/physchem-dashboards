@@ -1,0 +1,81 @@
+# Translations template for PROJECT.
+# Copyright (C) 2022 ORGANIZATION
+# This file is distributed under the same license as the PROJECT project.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2022.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PROJECT VERSION\n"
+"Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
+"POT-Creation-Date: 2022-05-10 19:34+0200\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.9.1\n"
+
+#: app.py:60 app.py:117
+msgid "Maxwell-Boltzmann distribution"
+msgstr ""
+
+#: app.py:75
+msgid "temperature not set"
+msgstr ""
+
+#: app.py:90 app.py:244
+msgid "Probability"
+msgstr ""
+
+#: app.py:100
+msgid "Delete"
+msgstr ""
+
+#: app.py:114
+msgid "Add plot"
+msgstr ""
+
+#: app.py:118
+msgid "explore how each curve changes on changing the parameters"
+msgstr ""
+
+#: app.py:147
+msgid ""
+"\n"
+"        The probability $P$ that a molecule has a speed between $v$ and "
+"$v + \\Delta v$ is  \n"
+"        $$P = \\int_v^{v + \\Delta v} F(v) dv$$  \n"
+"        $F(v)$ is the **probability density**  that depends on speed $v$,"
+" mass of the molecule, $m$ and temperature, $T$ according to Maxwell "
+"Boltzmann equation  \n"
+"        $F(v) = \\sqrt { \\left( \\frac{m}{2 \\pi k T} \\right)^3  }4 "
+"\\pi v^2 e^{-\\frac{mv^2}{2kT}}$\n"
+"        "
+msgstr ""
+
+#: app.py:153
+msgid "less info"
+msgstr ""
+
+#: app.py:156
+msgid "more info"
+msgstr ""
+
+#: app.py:185
+msgid "temperature"
+msgstr ""
+
+#: app.py:235
+msgid "Probability ---"
+msgstr ""
+
+#: app.py:268
+msgid "velocity m/s"
+msgstr ""
+
+#: app.py:268
+msgid "probability density s/m"
+msgstr ""
+

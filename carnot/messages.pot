@@ -1,0 +1,143 @@
+# Translations template for PROJECT.
+# Copyright (C) 2023 ORGANIZATION
+# This file is distributed under the same license as the PROJECT project.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2023.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PROJECT VERSION\n"
+"Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
+"POT-Creation-Date: 2023-04-28 10:40+0200\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.10.3\n"
+
+#: app.py:31 app.py:105
+msgid "Carnot cycle"
+msgstr ""
+
+#: app.py:40
+msgid "T cold /K"
+msgstr ""
+
+#: app.py:44
+msgid "T hot /K"
+msgstr ""
+
+#: app.py:48
+msgid "V₁ /㎥"
+msgstr ""
+
+#: app.py:52
+msgid "V₂ /㎥"
+msgstr ""
+
+#: app.py:63
+msgid "η = --"
+msgstr ""
+
+#: app.py:64
+msgid "w = --"
+msgstr ""
+
+#: app.py:74
+msgid "V /㎥"
+msgstr ""
+
+#: app.py:75 app.py:209
+msgid "p /Pa"
+msgstr ""
+
+#: app.py:76
+msgid "T /K"
+msgstr ""
+
+#: app.py:89
+msgid "w /J"
+msgstr ""
+
+#: app.py:90
+msgid "q /J"
+msgstr ""
+
+#: app.py:91
+msgid "∆U /J"
+msgstr ""
+
+#: app.py:92
+msgid "∆S /J"
+msgstr ""
+
+#: app.py:106
+msgid ""
+"explore how the thermodynamics parameters change on changing the volumes "
+"and/or temperatures"
+msgstr ""
+
+#: app.py:148
+msgid ""
+"\n"
+"        **Carnot cycle** describes the thermodynamical behavior of the "
+"**Carnot engine**.\n"
+"        It consists of four steps, each performed in a reversible way.\n"
+"        \n"
+"        The total change of each state function ($U$, $S$, $p$, $V$, $T$)"
+"  during a cycle is zero, being the initial and final point coincident. "
+"However, the amounts of work and heat (that are path functions) are not "
+"zero.\n"
+"        \n"
+"        The total amount of work, $w$, corresponds to the difference "
+"bewteen the heat absorbed from the hot reservoir, $q_H$, and the heat "
+"trasferred to the cold reservoir, $q_C$:\n"
+"        \n"
+"        $$w = q_H - q_C$$\n"
+"        \n"
+"        The efficiency of any engine, $\\eta$, is defined as:\n"
+"        \n"
+"        $$\\eta = \\frac{w}{q_H} = \\frac{q_H - q_C}{q_H}$$\n"
+"        \n"
+"        For a Carnot engine it is possible to derive that $\\eta$ is "
+"also:\n"
+"        \n"
+"        $$\\eta = \\frac{T_H - T_C}{T_H} = 1 - \\frac{T_C}{T_H}$$\n"
+"        \n"
+"        "
+msgstr ""
+
+#: app.py:167
+msgid "less info"
+msgstr ""
+
+#: app.py:170
+msgid "more info"
+msgstr ""
+
+#: app.py:203
+msgid "Isothermal expansion"
+msgstr ""
+
+#: app.py:203
+msgid "Adiabatic expansion"
+msgstr ""
+
+#: app.py:203
+msgid "Isothermal compression"
+msgstr ""
+
+#: app.py:203
+msgid "Adiabatic compression"
+msgstr ""
+
+#: app.py:209
+msgid "V/ ㎥"
+msgstr ""
+
+#: app.py:213
+msgid "state"
+msgstr ""
+

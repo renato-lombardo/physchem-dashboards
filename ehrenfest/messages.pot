@@ -1,0 +1,80 @@
+# Translations template for PROJECT.
+# Copyright (C) 2022 ORGANIZATION
+# This file is distributed under the same license as the PROJECT project.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2022.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PROJECT VERSION\n"
+"Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
+"POT-Creation-Date: 2022-05-26 13:40+0200\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.9.1\n"
+
+#: app.py:31 app.py:36
+msgid "Ehrenfest model"
+msgstr ""
+
+#: app.py:37
+msgid "observe gas expansion"
+msgstr ""
+
+#: app.py:42 app.py:207
+msgid "steps"
+msgstr ""
+
+#: app.py:57
+msgid "generate"
+msgstr ""
+
+#: app.py:87
+msgid ""
+"\n"
+"        The **Ehrenfest model** is a simple representation of what "
+"happens during the expansion of a perfect gas. In this applet you can "
+"choose how many particles to put initially in box A and box B and how "
+"many steps of the model to simulate. After that, you can create the "
+"simulation by clicking on **generate** and observe what happens clicking "
+"on **play**. The plots  on the right top shows the fraction of particles,"
+" $f$, in the boxes ad each instant:  \n"
+"        $$f_A = \\frac{N_A}{N}\n"
+"        while the plot a the right bottom shows the probability "
+"distribution of a **fluctuation**, at each instant. The fluctuation is "
+"the difference of population between the boxes divided by the total "
+"number of particles in the system:  \n"
+"        \n"
+"        $$fluct = \\frac{N_A- N_B}{N}$$\n"
+"        \n"
+"        "
+msgstr ""
+
+#: app.py:95
+msgid "less info"
+msgstr ""
+
+#: app.py:98
+msgid "more info"
+msgstr ""
+
+#: app.py:181
+msgid "Step: "
+msgstr ""
+
+#: app.py:209
+msgid "fraction"
+msgstr ""
+
+#: app.py:212
+msgid "fluctuation"
+msgstr ""
+
+#: app.py:214
+msgid "probability"
+msgstr ""
+
