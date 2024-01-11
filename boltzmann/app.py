@@ -27,21 +27,23 @@ n_r = [2, 25]
 # define translator function
 _ = gettext
 
+####################
+# Initilialize app #
+####################
+# create the app
+app = dash.Dash(__name__, external_stylesheets=[dbc.themes.BOOTSTRAP])
 
-###################################
-# Initilialize app with languages #
-###################################
-external_scripts = []
-app = dash.Dash(__name__, external_stylesheets=[dbc.themes.BOOTSTRAP], external_scripts=external_scripts)
-server = app.server
-babel = Babel(app.server)
-LANGUAGES = {l.language: l.get_language_name() for l in babel.list_translations()}
+# use language that best matches the browser
 
-@babel.localeselector
+# utility function for locale selection
 def get_locale():
     return request.accept_languages.best_match(LANGUAGES.keys())
 
-app.config.update({'external_scripts': [f'https://cdn.plot.ly/plotly-locale-{lan}-latest.js' for lan in LANGUAGES]})
+# intialize Flask-babel
+babel = Babel(app.server) # app.server is the Flask app inside the dash app.
+with app.server.app_context():
+    LANGUAGES = {l.language: l.get_language_name() for l in babel.list_translations()}
+    babel.init_app(app.server, locale_selector=get_locale)
 app.config.update({'title': _('Boltzmann distribution')})
 
 ###########################
@@ -313,4 +315,4 @@ def setup_language(*messages):
 
 
 if __name__ == '__main__':
-    app.run_server(debug=True)
+    app.run_server(debug=True, host='0.0.0.0', port=5000)
