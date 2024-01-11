@@ -44,23 +44,25 @@ for mol in molecules:
         molecules[mol]['label2'] = f'{symbol}'
 
 
-###################################
-# Initilialize app with languages #
-###################################
+####################
+# Initilialize app #
+####################
+# create the app
 app = dash.Dash(__name__, external_stylesheets=[dbc.themes.BOOTSTRAP])
-babel = Babel(app.server)
-LANGUAGES = {l.language: l.get_language_name() for l in babel.list_translations()}
 
-# select language that best matches the browser used
-#@babel.localeselector
+# use language that best matches the browser
+
+# utility function for locale selection
 def get_locale():
     return request.accept_languages.best_match(LANGUAGES.keys())
 
-# ploty localization
-external_scripts =  [f'https://cdn.plot.ly/plotly-locale-{lan}-latest.js' for lan in LANGUAGES]
-app.config.update({'external_scripts': external_scripts})
-#loc = get_locale()
+# intialize Flask-babel
+babel = Babel(app.server) # app.server is the Flask app inside the dash app.
+with app.server.app_context():
+    LANGUAGES = {l.language: l.get_language_name() for l in babel.list_translations()}
+    babel.init_app(app.server, locale_selector=get_locale)
 app.config.update({'title': _("Maxwell-Boltzmann distribution")})
+
 
 #####################
 # set up app layout #
