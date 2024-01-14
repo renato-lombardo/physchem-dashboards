@@ -1,9 +1,0 @@
-dash
-dash_bootstrap_components
-dash_daq
-Flask
-Flask_Babel
-numpy
-plotly
-gunicorn
-pandas
