@@ -82,17 +82,7 @@ def show_info(n_clicks):
         button_text = _('more info')
     return button_text, text
 
-@callback([Output('add-button', 'children'),
-               Output('title', 'children'),
-               Output('subtitle', 'children'),
-              ],
-              [Input('add-button', 'children'),
-               Input('title', 'children'),
-               Input('subtitle', 'children'),
-              ])
-def setup_language(*messages):
-    return [_(m) for m in messages]
-    
+
 ##########################
 # set up specific layout #
 ##########################
@@ -168,6 +158,17 @@ fluid=True,
 # specific callbacks #
 ######################
 
+@callback([Output('add-button', 'children'),
+               Output('title', 'children'),
+               Output('subtitle', 'children'),
+              ],
+              [Input('add-button', 'children'),
+               Input('title', 'children'),
+               Input('subtitle', 'children'),
+              ])
+def setup_language(*messages):
+    return [_(m) for m in messages]
+    
 @callback(Output('curves-container', 'children'),
               [Input('add-button', 'n_clicks'),
               Input({'type':'clear-button', 'uid': ALL}, 'n_clicks')],
