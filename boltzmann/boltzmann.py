@@ -126,10 +126,6 @@ def controls_factory(uid):
     controls : object
         controls container
     '''   
-    #e_max_input = dbc.Container([dbc.Label(_('Max energy (eV)'), id={'type': 'e-max-label', 'uid': uid}),
-    #                             dbc.Input(id={'type': 'e-max-input', 'uid': uid}, type='number',
-    #                                     min=0.01, max=5, value=0.1, debounce=True)
-    #                    ])
     e_max_input = dbc.Row([dbc.Col(dbc.Label(_('Max energy (eV)'), id={'type': 'e-max-label', 'uid': uid})),
                         dbc.Col(dbc.Input(id={'type': 'e-max-input', 'uid': uid}, type='number',
                                          min=e_max_r[0], max=e_max_r[1], step=0.01, value=0.1))
@@ -151,7 +147,6 @@ def controls_factory(uid):
     data_table = dash_table.DataTable(
         id = {'type': 'data-table', 'uid': uid},
         columns = [
-                #{'name': _('energy'), 'id': 'energy', 'type': 'numeric', 'format': Format(precision=2, scheme=Scheme.decimal_si_prefix)},
                 {'name': _('energy'), 'id': 'energy', 'type': 'numeric', 'format': Format(precision=2, scheme=Scheme.fixed)},
                 {'name': _('pop fract'), 'id': 'population', 'type': 'numeric', 'format': Format(precision=3, scheme=Scheme.fixed)}
             ],
