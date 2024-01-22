@@ -1,53 +1,37 @@
 # Translations template for PROJECT.
-# Copyright (C) 2022 ORGANIZATION
+# Copyright (C) 2024 ORGANIZATION
 # This file is distributed under the same license as the PROJECT project.
-# FIRST AUTHOR <EMAIL@ADDRESS>, 2022.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2024.
 #
 #, fuzzy
 msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2022-05-16 15:56+0200\n"
+"POT-Creation-Date: 2024-01-22 16:47+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Generated-By: Babel 2.9.1\n"
+"Generated-By: Babel 2.14.0\n"
 
-#: app.py:46 app.py:56
-msgid "Levels"
-msgstr ""
-
-#: app.py:60
-msgid "Delete"
-msgstr ""
-
-#: app.py:81 app.py:99
+#: morse.py:23
 msgid "Bond potential"
 msgstr ""
 
-#: app.py:86
-msgid "distance"
-msgstr ""
-
-#: app.py:97
-msgid "add plot"
-msgstr ""
-
-#: app.py:100
+#: morse.py:24
 msgid "explore how each curve changes on changing the parameters"
 msgstr ""
 
-#: app.py:127
+#: morse.py:25
 msgid ""
 "\n"
 "        **Hooke potential** (elastic potential energy) can be used as a "
 "simple model for the chemical bond. Its expression is:  \n"
 "        \n"
-"        $$V = \\frac{1}{2} k x^2$$  \n"
+"        $$V = \\frac{1}{2} k (r-r_e)^2$$  \n"
 "        \n"
 "        In this model the bond never breaks. It is a suitable model when "
 "the energy are not very large.  \n"
@@ -55,8 +39,8 @@ msgid ""
 "        **Morse potential** (anelastic potential energy) is a more "
 "complex model for the chemical bond. Its expression is:  \n"
 "        \n"
-"        $$V = D_e \\left( \\left(1-e^{-\\alpha(r-r_e)} \\right)^2 -1 "
-"\\right)$$  \n"
+"        $$V = D_e \\left( \\left[1-e^{-\\alpha(r-r_e)} \\right)^2 -1 "
+"\\right]$$  \n"
 "        \n"
 "        In this model there is a **dissociation limit**, an energy at "
 "which the bond breaks. $D_e$ is the **potential well**, the deeper the "
@@ -65,19 +49,35 @@ msgid ""
 "        "
 msgstr ""
 
-#: app.py:140
+#: morse.py:94
 msgid "less info"
 msgstr ""
 
-#: app.py:143
+#: morse.py:97
 msgid "more info"
 msgstr ""
 
-#: app.py:234
+#: morse.py:120 morse.py:130
+msgid "Levels"
+msgstr ""
+
+#: morse.py:134
+msgid "Delete"
+msgstr ""
+
+#: morse.py:142
+msgid "distance"
+msgstr ""
+
+#: morse.py:153
+msgid "add plot"
+msgstr ""
+
+#: morse.py:256
 msgid "distance, Å"
 msgstr ""
 
-#: app.py:235
+#: morse.py:257
 msgid "energy, eV"
 msgstr ""
 

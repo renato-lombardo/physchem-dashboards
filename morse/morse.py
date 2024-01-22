@@ -7,8 +7,7 @@ import plotly.express as px
 import plotly.graph_objs as go
 import plotly.io as pio
 import re
-from dash import dcc
-from dash import html
+from dash import callback, dcc, html
 from dash.dependencies import Input, Output, State, MATCH, ALL
 from dash.exceptions import PreventUpdate
 from flask import Flask, request
@@ -18,13 +17,33 @@ from model import oscillator, molecules
 # define translator function
 _ = gettext
 
+#########################
+# Dashboard information #
+#########################
+title = _('Bond potential')
+subtitle = _('explore how each curve changes on changing the parameters')
+info = _(r'''
+        **Hooke potential** (elastic potential energy) can be used as a simple model for the chemical bond. Its expression is:  
+        
+        $$V = \frac{1}{2} k (r-r_e)^2$$  
+        
+        In this model the bond never breaks. It is a suitable model when the energy are not very large.  
+        
+        **Morse potential** (anelastic potential energy) is a more complex model for the chemical bond. Its expression is:  
+        
+        $$V = D_e \left( \left[1-e^{-\alpha(r-r_e)} \right)^2 -1 \right]$$  
+        
+        In this model there is a **dissociation limit**, an energy at which the bond breaks. $D_e$ is the **potential well**, the deeper the well, the higher the bond energy (i.e. the work needed to break the bond).
+        ''')
+order = 2
+
+##################################
+# common variables and utilities #
+##################################
 # initialize units registry
 ureg = pint.UnitRegistry()
-
 # import colors list for plotly plots
 colors = px.colors.qualitative.Plotly
-
-
 # generate labels for each molecule to use in the dashboard
 # label: for the dropdown widget, label2: for the plot legend
 for mol in molecules:
@@ -37,10 +56,52 @@ for mol in molecules:
         molecules[mol]['label'] = html.Span([symbol])
         molecules[mol]['label2'] = f'{symbol}'
 
+#######################################
+# set up general layout and callbacks #
+#######################################
 
-###########################
-# dash element definition #
-###########################
+def header():
+    title_html = html.H1(_(title), id='title')
+    subtitle_html = html.P(_(subtitle), id='subtitle')
+    info_button = dbc.Button(id='info-button', n_clicks=0, children='more info')
+    # a text area that support mathjax and Latex for equations
+    info_text = dcc.Markdown('   ', mathjax=True, id='info-text')
+    # put button and text area togheter
+    title_col = dbc.Col(dbc.Container([title_html, subtitle_html]), width='auto')
+    info_col = dbc.Col(dbc.Container([info_text, info_button]), width='auto')
+    #header = dbc.Row([title_col, info_col])
+    return dbc.Row([title_col, info_col])
+
+
+@callback([Output('title', 'children'),
+           Output('subtitle', 'children')
+           ],
+          [Input('title', 'children'),
+           Input('subtitle', 'children')
+          ])
+def setup_language_general(*messages):
+    return [_(m) for m in messages]
+
+
+@callback([Output('info-button', 'children'),
+               Output('info-text', 'children')],
+              Input('info-button', 'n_clicks')
+             )
+def show_info(n_clicks):
+    '''show a short information about the model '''
+    if n_clicks%2: # button pressed for an uneven number of times
+        text = _(info)
+        button_text = _('less info') # change the label
+    else: # clicked again after showing, means hide the info
+        text = '   '
+        button_text = _('more info')
+    return button_text, text
+
+
+##########################
+# set up specific layout #
+##########################
+
 def controls_card_factory(uid=None):
     '''generate a card with all the controls for each curve'''
     
@@ -78,28 +139,6 @@ def controls_card_factory(uid=None):
                              body=True, id={'type':'controls_card', 'uid':uid}, style={'margin-bottom':5})
     return controls_card
 
-####################
-# Initilialize app #
-####################
-# create the app
-app = dash.Dash(__name__, external_stylesheets=[dbc.themes.BOOTSTRAP])
-
-# use language that best matches the browser
-
-# utility function for locale selection
-def get_locale():
-    return request.accept_languages.best_match(LANGUAGES.keys())
-
-# intialize Flask-babel
-babel = Babel(app.server) # app.server is the Flask app inside the dash app.
-with app.server.app_context():
-    LANGUAGES = {l.language: l.get_language_name() for l in babel.list_translations()}
-    babel.init_app(app.server, locale_selector=get_locale)
-app.config.update({'title': _('Bond potential')})
-
-#####################
-# set up app layout #
-#####################
 r_slider = dbc.Container([dbc.Label(_('distance'), id='distance-label'),
                           dcc.Slider(id = 'r-slider',
                                      min=1, max=10, step=10,
@@ -113,61 +152,33 @@ r_slider = dbc.Container([dbc.Label(_('distance'), id='distance-label'),
 curves_container = dbc.Container([], id='curves-container') # put all the cards together
 add_button = dbc.Button(_('add plot'), id='add-button', style={'margin-bottom':5})
 left_panel = dbc.Container([r_slider, add_button, curves_container], id='left-panel')
-title = html.H1(_('Bond potential'), id='title')
-subtitle = html.P(_('explore how each curve changes on changing the parameters'), id='subtitle')
-# define the information widget. On clicking the info_button a short description of the model
-# is shown
-info_button = dbc.Button(id='info-button', n_clicks=0, children='More info')
-# a text area that support mathjax and Latex for equations
-info_text = dcc.Markdown('   ', mathjax=True, id='info-text')
-# put button and text area togheter
-info = dbc.Container([info_text, info_button])
-
-title_col = dbc.Col(dbc.Container([title, subtitle]), width='auto')
-info_col = dbc.Col(dbc.Container([info_text, info_button]), width='auto')
-
-header = dbc.Row([title_col, info_col])
-# Layout of the app with all the widgets
-app.layout = dbc.Container([
-    header,
-    html.Hr(),
-    dbc.Row([dbc.Col(left_panel, xl=3),
-        dbc.Col(dcc.Graph(id="V-plot", style={'height':'80vh'}), xl=7),],
-             align="center",),
-    ],
-    fluid=True,
-    )
+def layout():
+    'set layout of the app with all the widgets'
+    layout = dbc.Container([
+        header(),
+        html.Hr(),
+        dbc.Row([dbc.Col(left_panel, xl=3),
+                 dbc.Col(dcc.Graph(id="V-plot", style={'height':'80vh'}), xl=7),],
+                 align="center",),],                           
+        fluid=True,
+        id='layout'
+        )
+    return layout
    
-#############
-# Callbacks #
-#############
-@app.callback([Output('info-button', 'children'),
-               Output('info-text', 'children')],
-              Input('info-button', 'n_clicks')
-             )
-def show_info(n_clicks):
-    if n_clicks%2: #uneven number
-        text = _(r'''
-        **Hooke potential** (elastic potential energy) can be used as a simple model for the chemical bond. Its expression is:  
-        
-        $$V = \frac{1}{2} k (r-r_e)^2$$  
-        
-        In this model the bond never breaks. It is a suitable model when the energy are not very large.  
-        
-        **Morse potential** (anelastic potential energy) is a more complex model for the chemical bond. Its expression is:  
-        
-        $$V = D_e \left( \left[1-e^{-\alpha(r-r_e)} \right)^2 -1 \right]$$  
-        
-        In this model there is a **dissociation limit**, an energy at which the bond breaks. $D_e$ is the **potential well**, the deeper the well, the higher the bond energy (i.e. the work needed to break the bond).
-        ''')
-        button_text = _('less info')
-    else:
-        text = '   '
-        button_text = _('more info')
-    return button_text, text
 
-
-@app.callback(Output('curves-container', 'children'),
+######################
+# specific callbacks #
+######################
+@callback([Output('distance-label', 'children'),
+               Output('add-button', 'children'),
+              ],
+              [Input('distance-label', 'children'),
+               Input('add-button', 'children'),
+              ])
+def setup_language_specific(*messages):
+    return [_(m) for m in messages]
+    
+@callback(Output('curves-container', 'children'),
               [Input('add-button', 'n_clicks'),
               Input({'type':'clear-button', 'uid': ALL}, 'n_clicks')],
               State('curves-container', 'children'),
@@ -191,22 +202,8 @@ def update_curves_container(add_n_clicks, clear_n_clicks, curves_container_list)
             raise PreventUpdate # needed when app starts
 
             
-@app.callback([Output('distance-label', 'children'),
-               Output('add-button', 'children'),
-               Output('title', 'children'),
-               Output('subtitle', 'children'),
-              ],
-              [Input('distance-label', 'children'),
-               Input('add-button', 'children'),
-               Input('title', 'children'),
-               Input('subtitle', 'children'),
-              ])
-def setup_language(*messages):
-    return [_(m) for m in messages]
-            
-            
 # This is the most important callback doing nearly all the work
-@app.callback([Output('V-plot', 'figure'),
+@callback([Output('V-plot', 'figure'),
                Output('V-plot', 'config'),
                Output({'type':'controls_card', 'uid': ALL}, 'style'),
               ],
@@ -271,4 +268,29 @@ def update_plot(r_max, mols, morse, morse_levels, hooke, hooke_levels, style):
     return myfig, config, new_style, 
 
 if __name__ == '__main__':
+    ####################
+    # Initilialize app #
+    ####################
+    # create the app
+    app = dash.Dash(__name__, external_stylesheets=[dbc.themes.BOOTSTRAP])
+    
+    def get_locale():
+        return request.accept_languages.best_match(LANGUAGES.keys())
+    
+    # intialize Flask-babel
+    babel = Babel(app.server) # app.server is the Flask app inside the dash app.
+    with app.server.app_context():
+        LANGUAGES = {l.language: l.get_language_name() for l in babel.list_translations()}
+        babel.init_app(app.server, locale_selector=get_locale)
+    app.layout = layout()
     app.run_server(debug=True, host='0.0.0.0', port=5000)
+else: # use as a page in a dash multipage app
+    dash.register_page(
+        __name__,
+        path=__name__,
+        title=title,
+        name=title,
+        subtitle=subtitle,
+        info=info,
+        order=order
+)

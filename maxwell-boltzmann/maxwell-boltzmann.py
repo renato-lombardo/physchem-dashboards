@@ -19,14 +19,15 @@ _ = gettext
 #########################
 # Dashboard information #
 #########################
-title = 'Maxwell-Boltzmann distribution'
-subtitle = 'explore how each curve changes on changing the parameters'
-info = r'''
+title = _('Maxwell-Boltzmann distribution')
+subtitle = _('explore how each curve changes on changing the parameters')
+info = _(r'''
         The probability $P$ that a molecule has a speed between $v$ and $v + \Delta v$ is  
         $$P = \int_v^{v + \Delta v} F(v) dv$$  
         $F(v)$ is the **probability density**  that depends on speed $v$, mass of the molecule, $m$ and temperature, $T$ according to Maxwell Boltzmann equation  
         $F(v) = \sqrt { \left( \frac{m}{2 \pi k T} \right)^3  }4 \pi v^2 e^{-\frac{mv^2}{2kT}}$
-        '''
+        ''')
+order = 1
 
 ##################################
 # common variables and utilities #
@@ -173,6 +174,7 @@ def layout():
 ######################
 # specific callbacks #
 ######################
+
 @callback([Output('add-button', 'children')],
           [Input('add-button', 'children')])
 def setup_language_specific(*messages):
@@ -321,5 +323,5 @@ else: # use as a page in a dash multipage app
         name=title,
         subtitle=subtitle,
         info=info,
-        order=1
+        order=order
 )

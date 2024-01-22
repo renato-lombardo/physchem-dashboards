@@ -23,9 +23,9 @@ _ = gettext
 #########################
 # Dashboard information #
 #########################
-title = "Boltzmann distribution"
-subtitle = "explore how each distribution changes on changing the parameters"
-info = r'''
+title = _("Boltzmann distribution")
+subtitle = _("explore how each distribution changes on changing the parameters")
+info = _(r'''
         **Boltzmann distribution** describes how $N$ molecules are distributed on different energy levels, depending on temperature. The fraction of molecules with energi $E_1$ is:  
         
         $$\frac{N_1}{N} = \frac{e^{-\frac{E_1}{kT}}}{Q}$$  
@@ -35,7 +35,8 @@ info = r'''
         $$Q = \sum_{i} e^{-\frac{E_i}{kT}}$$  
         
         It is a _normalization factor_ that ensures that the total probability will be 1.
-        '''
+        ''')
+order = 3
 
 
 ##################################
@@ -329,6 +330,6 @@ else: # use as a page in a dash multipage app
         name=title,
         subtitle=subtitle,
         info=info,
-        order=3
+        order=order
 )
 
