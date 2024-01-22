@@ -19,14 +19,14 @@ _ = gettext
 #########################
 # Dashboard information #
 #########################
-title = html.H1(_("Maxwell-Boltzmann distribution"), id='title')
-subtitle = html.P(_('explore how each curve changes on changing the parameters'), id='subtitle')
-info = _(r'''
+title = 'Maxwell-Boltzmann distribution'
+subtitle = 'explore how each curve changes on changing the parameters'
+info = r'''
         The probability $P$ that a molecule has a speed between $v$ and $v + \Delta v$ is  
         $$P = \int_v^{v + \Delta v} F(v) dv$$  
         $F(v)$ is the **probability density**  that depends on speed $v$, mass of the molecule, $m$ and temperature, $T$ according to Maxwell Boltzmann equation  
         $F(v) = \sqrt { \left( \frac{m}{2 \pi k T} \right)^3  }4 \pi v^2 e^{-\frac{mv^2}{2kT}}$
-        ''')
+        '''
 
 ##################################
 # common variables and utilities #
@@ -58,15 +58,28 @@ for mol in molecules:
 # set up general layout and callbacks #
 #######################################
 
-# define the information widget. On clicking the info_button a short description of the model
-# is shown
-info_button = dbc.Button(id='info-button', n_clicks=0, children='More info')
-# a text area that support mathjax and Latex for equations
-info_text = dcc.Markdown('   ', mathjax=True, id='info-text')
-# put button and text area togheter
-title_col = dbc.Col(dbc.Container([title, subtitle]), width='auto')
-info_col = dbc.Col(dbc.Container([info_text, info_button]), width='auto')
-header = dbc.Row([title_col, info_col])
+def header():
+    title_html = html.H1(_(title), id='title')
+    subtitle_html = html.P(_(subtitle), id='subtitle')
+    info_button = dbc.Button(id='info-button', n_clicks=0, children='more info')
+    # a text area that support mathjax and Latex for equations
+    info_text = dcc.Markdown('   ', mathjax=True, id='info-text')
+    # put button and text area togheter
+    title_col = dbc.Col(dbc.Container([title_html, subtitle_html]), width='auto')
+    info_col = dbc.Col(dbc.Container([info_text, info_button]), width='auto')
+    #header = dbc.Row([title_col, info_col])
+    return dbc.Row([title_col, info_col])
+
+
+@callback([Output('title', 'children'),
+           Output('subtitle', 'children')
+           ],
+          [Input('title', 'children'),
+           Input('subtitle', 'children')
+          ])
+def setup_language_general(*messages):
+    return [_(m) for m in messages]
+
 
 @callback([Output('info-button', 'children'),
                Output('info-text', 'children')],
@@ -75,7 +88,7 @@ header = dbc.Row([title_col, info_col])
 def show_info(n_clicks):
     '''show a short information about the model '''
     if n_clicks%2: # button pressed for an uneven number of times
-        text = info
+        text = _(info)
         button_text = _('less info') # change the label
     else: # clicked again after showing, means hide the info
         text = '   '
@@ -136,37 +149,33 @@ def controls_card_factory(uid=None):
     ], body=True, id={'type':'controls_card', 'uid':uid}, style={'margin-bottom':5})
     return controls_card
 
-# put all the cards together
-curves_container = dbc.Container([], id='curves-container')
-# button to add a new plot
-add_button = dbc.Button(_('Add plot'), id='add-button', style={'margin-bottom':5})
-#left panel containing all the plots and the button
-left_panel = dbc.Container([add_button, curves_container], id='left-panel')
+def layout():
+    # put all the cards together
+    curves_container = dbc.Container([], id='curves-container')
+    # button to add a new plot
+    add_button = dbc.Button(_('Add plot'), id='add-button', style={'margin-bottom':5})
+    #left panel containing all the plots and the button
+    left_panel = dbc.Container([add_button, curves_container], id='left-panel')
 
-# specific layout of the app with all the widgets
-layout = dbc.Container([
-    header,
-    html.Hr(),
-    dbc.Row([dbc.Col(left_panel, xl=3),
-        dbc.Col(dcc.Graph(id="MB-plot", style={'height':'80vh'}), xl=7),],
-             align="center",),
-],
-fluid=True,
-)
+    # specific layout of the app with all the widgets
+    layout = dbc.Container([
+        header(),
+        html.Hr(),
+        dbc.Row([dbc.Col(left_panel, xl=3),
+            dbc.Col(dcc.Graph(id="MB-plot", style={'height':'80vh'}), xl=7),],
+                 align="center",),
+    ],
+    fluid=True,
+    id='layout'
+    )
+    return layout
 
 ######################
 # specific callbacks #
 ######################
-
-@callback([Output('add-button', 'children'),
-               Output('title', 'children'),
-               Output('subtitle', 'children'),
-              ],
-              [Input('add-button', 'children'),
-               Input('title', 'children'),
-               Input('subtitle', 'children'),
-              ])
-def setup_language(*messages):
+@callback([Output('add-button', 'children')],
+          [Input('add-button', 'children')])
+def setup_language_specific(*messages):
     return [_(m) for m in messages]
     
 @callback(Output('curves-container', 'children'),
@@ -302,7 +311,7 @@ if __name__ == '__main__': # use as a standalone dash app
     with app.server.app_context():
         LANGUAGES = {l.language: l.get_language_name() for l in babel.list_translations()}
         babel.init_app(app.server, locale_selector=get_locale)
-    app.layout = layout
+    app.layout = layout()
     app.run_server(debug=True, host='0.0.0.0', port=5000)
 else: # use as a page in a dash multipage app
     dash.register_page(
