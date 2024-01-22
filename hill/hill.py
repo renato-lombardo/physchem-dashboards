@@ -5,8 +5,7 @@ import dash_daq as daq
 import plotly.express as px
 import plotly.graph_objs as go
 import re
-from dash import dcc
-from dash import html
+from dash import callback, dcc, html
 from dash.dependencies import Input, Output, State, MATCH, ALL
 from dash.exceptions import PreventUpdate
 from flask import Flask, request
@@ -16,26 +15,74 @@ from model import hill
 # define translator function
 _ = gettext
 
+
+#########################
+# Dashboard information #
+#########################
+title = _("Hill equation")
+subtitle = _("explore how changing parameters affects the saturation of hemoglobin")
+info = _(r'''
+        The **Hill-Langmuir equation** describes the interaction of a ligand, $L$, with a binding site. Specifically, it relates the **saturation**, $s$, to the ligand concentration.
+
+        $$s = \frac{[L]^n}{([L]^n + K_d^n)}$$
+
+        where $[L]$ is the molar concentration of the ligand, $K_d$ is the dissociation constant, and $n$ is the **Hill coefficient**, which describes the cooperativity of the binding process.
+
+        The saturation corresponds to the ratio of occupied binding sites, $N_L$, to the total number of binding sites, $N$:
+
+        $$ s = \frac{N_L}{N}
+        ''')
+order = 7
+
+##################################
+# common variables and utilities #
+##################################
+
+# colors for plotting different curves
 colors = px.colors.qualitative.Plotly
 
-####################
-# Initilialize app #
-####################
-# create the app
-app = dash.Dash(__name__, external_stylesheets=[dbc.themes.BOOTSTRAP])
 
-# use language that best matches the browser
+#######################################
+# set up general layout and callbacks #
+#######################################
 
-# utility function for locale selection
-def get_locale():
-    return request.accept_languages.best_match(LANGUAGES.keys())
+def header():
+    title_html = html.H1(_(title), id='title')
+    subtitle_html = html.P(_(subtitle), id='subtitle')
+    info_button = dbc.Button(id='info-button', n_clicks=0, children='more info')
+    # a text area that support mathjax and Latex for equations
+    info_text = dcc.Markdown('   ', mathjax=True, id='info-text')
+    # put button and text area togheter
+    title_col = dbc.Col(dbc.Container([title_html, subtitle_html]), width='auto')
+    info_col = dbc.Col(dbc.Container([info_text, info_button]), width='auto')
+    #header = dbc.Row([title_col, info_col])
+    return dbc.Row([title_col, info_col])
 
-# intialize Flask-babel
-babel = Babel(app.server) # app.server is the Flask app inside the dash app.
-with app.server.app_context():
-    LANGUAGES = {l.language: l.get_language_name() for l in babel.list_translations()}
-    babel.init_app(app.server, locale_selector=get_locale)
-app.config.update({'title': _('Hill equation')})
+
+@callback([Output('title', 'children'),
+           Output('subtitle', 'children')
+           ],
+          [Input('title', 'children'),
+           Input('subtitle', 'children')
+          ])
+def setup_language_general(*messages):
+    return [_(m) for m in messages]
+
+
+@callback([Output('info-button', 'children'),
+               Output('info-text', 'children')],
+              Input('info-button', 'n_clicks')
+             )
+def show_info(n_clicks):
+    '''show a short information about the model '''
+    if n_clicks%2: # button pressed for an uneven number of times
+        text = _(info)
+        button_text = _('less info') # change the label
+    else: # clicked again after showing, means hide the info
+        text = '   '
+        button_text = _('more info')
+    return button_text, text
+
 
 ###########################
 # dash element definition #
@@ -74,8 +121,6 @@ def controls_card_factory(uid=None):
 add_button = dbc.Button(_('Add plot'), id='add-button', style={'margin-bottom':5})
 controls_container = dbc.Container([], id='controls-container', fluid=True)
 plot = dcc.Graph(id='plot', style={'height': '80vh'})
-title = html.H1(_("Hill equation"), id='title')
-subtitle = html.P(_("explore how changing parameters affects the saturation of hemoglobin"), id='subtitle')
 pO2_slider = dbc.Container([html.H5("pO\u2082 --:-- mbar", id='pO2-output'),
                             dcc.RangeSlider(id = 'pO2-slider',
                                             min=0, max=2000, step=50,
@@ -87,57 +132,26 @@ pO2_slider = dbc.Container([html.H5("pO\u2082 --:-- mbar", id='pO2-output'),
 
 left = dbc.Container([add_button, pO2_slider, html.Hr(), controls_container])
 
-# define the information widget. On clicking the info_button a short description of the model
-# is shown
-info_button = dbc.Button(id='info-button', n_clicks=0, children='More info')
-# a text area that support mathjax and Latex for equations
-info_text = dcc.Markdown('   ', mathjax=True, id='info-text')
-# put button and text area togheter
-info = dbc.Container([info_text, info_button])
-title_col = dbc.Col(dbc.Container([title, subtitle]), width='auto')
-info_col = dbc.Col(dbc.Container([info_text, info_button]), width='auto')
-header = dbc.Row([title_col, info_col])
-
-app.layout = dbc.Container([
-    header,
+def layout():
+    layout = dbc.Container([
+    header(),
     html.Hr(),
     dbc.Row([
         dbc.Col(left, align='left'),
         dbc.Col([plot], xl=8, align='left')
         ])
     ],
-    fluid=True
+    fluid=True,
+    id='layout'
     )
+    return layout
 
-                         
-#############
-# Callbacks #
-#############
 
-@app.callback([Output('info-button', 'children'),
-               Output('info-text', 'children')],
-              Input('info-button', 'n_clicks')
-             )
-def show_info(n_clicks):
-    if n_clicks%2: #uneven number
-        text = _(r'''
-        The **Hill-Langmuir equation** describes the interaction of a ligand, $L$, with a binding site. Specifically, it relates the **saturation**, $s$, to the ligand concentration.
+##########################
+# set up specific layout #
+##########################
 
-        $$s = \frac{[L]^n}{([L]^n + K_d^n)}$$
-
-        where $[L]$ is the molar concentration of the ligand, $K_d$ is the dissociation constant, and $n$ is the **Hill coefficient**, which describes the cooperativity of the binding process.
-
-        The saturation corresponds to the ratio of occupied binding sites, $N_L$, to the total number of binding sites, $N$:
-
-        $$ s = \frac{N_L}{N}
-        ''')
-        button_text = _('less info')
-    else:
-        text = '   '
-        button_text = _('more info')
-    return button_text, text
-
-@app.callback(Output('controls-container', 'children'),
+@callback(Output('controls-container', 'children'),
               [Input('add-button', 'n_clicks'),
                Input({'type':'clear-button', 'uid': ALL}, 'n_clicks')],
               State('controls-container', 'children')
@@ -158,26 +172,26 @@ def update_controls_container(add_n_clicks, clear_n_clicks, controls_container_l
         else:
             raise PreventUpdate # needed when app starts         
 
-@app.callback(Output({'type':'p50-output', 'uid': MATCH}, 'children'),
+@callback(Output({'type':'p50-output', 'uid': MATCH}, 'children'),
               Input({'type':'p50-slider', 'uid': MATCH}, 'value'))
 def update_p50_slider(val):
     return f'p50 = {val} mbar'
 
 
-@app.callback(Output({'type':'n-output', 'uid': MATCH}, 'children'),
+@callback(Output({'type':'n-output', 'uid': MATCH}, 'children'),
               Input({'type':'n-slider', 'uid': MATCH}, 'value'))
 def update_n_slider(val):
     return f'n = {val}'
 
 
-@app.callback(Output('pO2-output', 'children'),
+@callback(Output('pO2-output', 'children'),
               Input('pO2-slider', 'value'))
 def update_pO2_slider(val):
     return f'pO\u2082 = [{val[0]}-{val[1]}] mbar'
 
             
 # this is the most important function
-@app.callback([Output('plot', 'figure'),
+@callback([Output('plot', 'figure'),
                Output({'type':'controls-card', 'uid': ALL}, 'style'),
               ],
               [Input({'type':'p50-slider', 'uid': ALL}, 'value'),
@@ -200,18 +214,36 @@ def update_plot(p50_list, n_list, pO2, styles):
               'yaxis': {'title': _('saturation'), 'range': (0, 1)}}
     return go.Figure(data=data, layout=layout), new_styles
 
-@app.callback([
-               Output('add-button', 'children'),
-               Output('title', 'children'),
-               Output('subtitle', 'children'),
-              ],
-              [Input('add-button', 'children'),
-               Input('title', 'children'),
-               Input('subtitle', 'children'),
-              ])
+@callback([Output('add-button', 'children')],
+          [Input('add-button', 'children')])
 def setup_language(*messages):
     return [_(m) for m in messages]
 
 
 if __name__ == '__main__':
+    ####################
+    # Initilialize app #
+    ####################
+    # create the app
+    app = dash.Dash(__name__, external_stylesheets=[dbc.themes.BOOTSTRAP])
+    
+    def get_locale():
+        return request.accept_languages.best_match(LANGUAGES.keys())
+    
+    # intialize Flask-babel
+    babel = Babel(app.server) # app.server is the Flask app inside the dash app.
+    with app.server.app_context():
+        LANGUAGES = {l.language: l.get_language_name() for l in babel.list_translations()}
+        babel.init_app(app.server, locale_selector=get_locale)
+    app.layout = layout()
     app.run_server(debug=True, host='0.0.0.0', port=5000)
+else: # use as a page in a dash multipage app
+    dash.register_page(
+        __name__,
+        path=__name__,
+        title=title,
+        name=title,
+        subtitle=subtitle,
+        info=info,
+        order=order
+)
