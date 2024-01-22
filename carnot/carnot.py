@@ -2,7 +2,7 @@ import numpy as np
 import dash
 import dash_bootstrap_components as dbc
 import plotly.graph_objs as go
-from dash import dash_table, dcc, html
+from dash import callback, dash_table, dcc, html
 from dash.dependencies import Input, Output, State, MATCH, ALL
 from dash.exceptions import PreventUpdate
 from dash.dash_table.Format import Format, Scheme
@@ -13,29 +13,91 @@ from model import carnot
 # define translator function
 _ = gettext
 
+#########################
+# Dashboard information #
+#########################
+title = _("Carnot cycle")
+subtitle = _("explore how the thermodynamics parameters change on changing the volumes and/or temperatures")
+info = _(r'''
+        **Carnot cycle** describes the thermodynamical behavior of the **Carnot engine**.
+        It consists of four steps, each performed in a reversible way.
+        
+        The total change of each state function ($U$, $S$, $p$, $V$, $T$)  during a cycle is zero, being the initial and final point coincident. However, the amounts of work and heat (that are path functions) are not zero.
+        
+        The total amount of work, $w$, corresponds to the difference bewteen the heat absorbed from the hot reservoir, $q_H$, and the heat trasferred to the cold reservoir, $q_C$:
+        
+        $$w = q_H - q_C$$
+        
+        The efficiency of any engine, $\eta$, is defined as:
+        
+        $$\eta = \frac{w}{q_H} = \frac{q_H - q_C}{q_H}$$
+        
+        For a Carnot engine it is possible to derive that $\eta$ is also:
+        
+        $$\eta = \frac{T_H - T_C}{T_H} = 1 - \frac{T_C}{T_H}$$
+        
+        ''')
+order = 6
 
-####################
-# Initilialize app #
-####################
-# create the app
-app = dash.Dash(__name__, external_stylesheets=[dbc.themes.BOOTSTRAP])
+##################################
+# common variables and utilities #
+##################################
 
-# use language that best matches the browser
+def update_table(row_names, columns, row_data):
+    data = []
+    for i, r in enumerate(row_names):
+        row = {'row_name': r}
+        for c in columns:
+            row[c] = row_data[i][c]
+        data.append(row)
+    return data
 
-# utility function for locale selection
-def get_locale():
-    return request.accept_languages.best_match(LANGUAGES.keys())
 
-# intialize Flask-babel
-babel = Babel(app.server) # app.server is the Flask app inside the dash app.
-with app.server.app_context():
-    LANGUAGES = {l.language: l.get_language_name() for l in babel.list_translations()}
-    babel.init_app(app.server, locale_selector=get_locale)
-app.config.update({'title': _('Carnot cycle')})
+#######################################
+# set up general layout and callbacks #
+#######################################
 
-###########################
-# dash element definition #
-###########################
+def header():
+    title_html = html.H1(_(title), id='title')
+    subtitle_html = html.P(_(subtitle), id='subtitle')
+    info_button = dbc.Button(id='info-button', n_clicks=0, children='more info')
+    # a text area that support mathjax and Latex for equations
+    info_text = dcc.Markdown('   ', mathjax=True, id='info-text')
+    # put button and text area togheter
+    title_col = dbc.Col(dbc.Container([title_html, subtitle_html]), width='auto')
+    info_col = dbc.Col(dbc.Container([info_text, info_button]), width='auto')
+    #header = dbc.Row([title_col, info_col])
+    return dbc.Row([title_col, info_col])
+
+
+@callback([Output('title', 'children'),
+           Output('subtitle', 'children')
+           ],
+          [Input('title', 'children'),
+           Input('subtitle', 'children')
+          ])
+def setup_language_general(*messages):
+    return [_(m) for m in messages]
+
+
+@callback([Output('info-button', 'children'),
+               Output('info-text', 'children')],
+              Input('info-button', 'n_clicks')
+             )
+def show_info(n_clicks):
+    '''show a short information about the model '''
+    if n_clicks%2: # button pressed for an uneven number of times
+        text = _(info)
+        button_text = _('less info') # change the label
+    else: # clicked again after showing, means hide the info
+        text = '   '
+        button_text = _('more info')
+    return button_text, text
+
+
+##########################
+# set up specific layout #
+##########################
 
 T_range = (5, 1000)
 V_range = (0.1, 10)
@@ -101,83 +163,27 @@ t_table = dash_table.DataTable(id = 't-table',
                     style_table={'height': '300px', 'overflowY': 'auto'})
 
 
-
 left = dbc.Container([out_panel, html.Hr(), s_table, t_table], fluid=True)
 right = dbc.Container([control_panel, plot], fluid=True)
 
-title = html.H3(_("Carnot cycle"), id='title')
-subtitle = html.P(_("explore how the thermodynamics parameters change on changing the volumes and/or temperatures"), id='subtitle')
-
-#define the information widget. On clicking the info_button a short description of the model
-# is shown
-info_button = dbc.Button(id='info-button', n_clicks=0, children='More info')
-# a text area that support mathjax and Latex for equations
-info_text = dcc.Markdown('   ', mathjax=True, id='info-text')
-# put button and text area togheter
-info = dbc.Container([info_text, info_button])
-title_col = dbc.Col(dbc.Container([title, subtitle]), width='auto')
-info_col = dbc.Col(dbc.Container([info_text, info_button]), width='auto')
-header = dbc.Row([title_col, info_col])
-
-# Layout of the app with all the widgets
-app.layout = dbc.Container([header,
+def layout():
+    layout = dbc.Container([header(),
                             html.Hr(),
                             dbc.Row([dbc.Col(left, xl=4),
                                      dbc.Col(right, xl=6)
-                           ])],
-                           fluid=True
+                                    ])],
+                           fluid=True,
+                           id='layout'
                            )
+    return layout
 
-# utility functions
-def update_table(row_names, columns, row_data):
-    data = []
-    for i, r in enumerate(row_names):
-        row = {'row_name': r}
-        for c in columns:
-            row[c] = row_data[i][c]
-        data.append(row)
-    return data
 
 #############
 # Callbacks #
 #############
 
-@app.callback([Output('info-button', 'children'),
-               Output('info-text', 'children')],
-              Input('info-button', 'n_clicks')
-             )
-def show_info(n_clicks):
-    if n_clicks%2: #uneven number
-        text = _(r'''
-        **Carnot cycle** describes the thermodynamical behavior of the **Carnot engine**.
-        It consists of four steps, each performed in a reversible way.
-        
-        The total change of each state function ($U$, $S$, $p$, $V$, $T$)  during a cycle is zero, being the initial and final point coincident. However, the amounts of work and heat (that are path functions) are not zero.
-        
-        The total amount of work, $w$, corresponds to the difference bewteen the heat absorbed from the hot reservoir, $q_H$, and the heat trasferred to the cold reservoir, $q_C$:
-        
-        $$w = q_H - q_C$$
-        
-        The efficiency of any engine, $\eta$, is defined as:
-        
-        $$\eta = \frac{w}{q_H} = \frac{q_H - q_C}{q_H}$$
-        
-        For a Carnot engine it is possible to derive that $\eta$ is also:
-        
-        $$\eta = \frac{T_H - T_C}{T_H} = 1 - \frac{T_C}{T_H}$$
-        
-        ''')
-        button_text = _('less info')
-    else:
-        text = '   '
-        button_text = _('more info')
-    return button_text, text
-
-
-
-
 # this is the most important function
-@app.callback([
+@callback([
                Output('PV-plot', 'figure'),
                Output('t-table', 'data'),
                Output('s-table', 'data'),
@@ -218,25 +224,46 @@ def update_plot_table(Tc, Th, V1, V2):
     s_data = update_table(state_names, columns, s)
     return fig, t_data, s_data, f'\u03B7 = {eta:.3f}', f'w = {w_tot:,.3f} J'
 
-@app.callback([
-               Output('title', 'children'),
-               Output('subtitle', 'children'),
+@callback([
                Output('Tc-label', 'children'),
                Output('Th-label', 'children'),
                Output('V1-label', 'children'),
                Output('V2-label', 'children'),
               ],
               [
-               Input('title', 'children'),
-               Input('subtitle', 'children'),
                Input('Tc-label', 'children'),
                Input('Th-label', 'children'),
                Input('V1-label', 'children'),
                Input('V2-label', 'children'),
               ])
-def setup_language(*messages):
+def setup_language_specific(*messages):
     return [_(m) for m in messages]
 
 
 if __name__ == '__main__':
+    ####################
+    # Initilialize app #
+    ####################
+    # create the app
+    app = dash.Dash(__name__, external_stylesheets=[dbc.themes.BOOTSTRAP])
+    
+    def get_locale():
+        return request.accept_languages.best_match(LANGUAGES.keys())
+    
+    # intialize Flask-babel
+    babel = Babel(app.server) # app.server is the Flask app inside the dash app.
+    with app.server.app_context():
+        LANGUAGES = {l.language: l.get_language_name() for l in babel.list_translations()}
+        babel.init_app(app.server, locale_selector=get_locale)
+    app.layout = layout()
     app.run_server(debug=True, host='0.0.0.0', port=5000)
+else: # use as a page in a dash multipage app
+    dash.register_page(
+        __name__,
+        path=__name__,
+        title=title,
+        name=title,
+        subtitle=subtitle,
+        info=info,
+        order=order
+)
