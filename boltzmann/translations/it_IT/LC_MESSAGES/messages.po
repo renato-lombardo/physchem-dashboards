@@ -88,11 +88,11 @@ msgstr ""
 
 #: app.py:241
 msgid "less info"
-msgstr ""
+msgstr "meno informazioni"
 
 #: app.py:244
 msgid "more info"
-msgstr ""
+msgstr "più informazioni"
 
 #: app.py:293
 msgid "population fraction"

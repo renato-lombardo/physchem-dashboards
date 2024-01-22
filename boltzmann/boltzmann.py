@@ -6,8 +6,7 @@ import plotly.express as px
 import plotly.graph_objs as go
 import plotly.io as pio
 import re
-from dash import dcc
-from dash import html
+from dash import callback, dcc, html
 from dash import dash_table
 from dash.dependencies import Input, Output, State, MATCH, ALL
 from dash.exceptions import PreventUpdate
@@ -17,61 +16,81 @@ from flask_babel import Babel, gettext
 from model import population
 from plotly.subplots import make_subplots
 
-# define ranges for parameters
-
-e_max_r = [0.01, 5]
-T_r = [1, 1e4]
-n_r = [2, 25]
-
-
 # define translator function
 _ = gettext
 
-####################
-# Initilialize app #
-####################
-# create the app
-app = dash.Dash(__name__, external_stylesheets=[dbc.themes.BOOTSTRAP])
 
-# use language that best matches the browser
+#########################
+# Dashboard information #
+#########################
+title = "Boltzmann distribution"
+subtitle = "explore how each distribution changes on changing the parameters"
+info = r'''
+        **Boltzmann distribution** describes how $N$ molecules are distributed on different energy levels, depending on temperature. The fraction of molecules with energi $E_1$ is:  
+        
+        $$\frac{N_1}{N} = \frac{e^{-\frac{E_1}{kT}}}{Q}$$  
+        
+        Where $Q$ is the **molecular partition function**:  
+        
+        $$Q = \sum_{i} e^{-\frac{E_i}{kT}}$$  
+        
+        It is a _normalization factor_ that ensures that the total probability will be 1.
+        '''
 
-# utility function for locale selection
-def get_locale():
-    return request.accept_languages.best_match(LANGUAGES.keys())
 
-# intialize Flask-babel
-babel = Babel(app.server) # app.server is the Flask app inside the dash app.
-with app.server.app_context():
-    LANGUAGES = {l.language: l.get_language_name() for l in babel.list_translations()}
-    babel.init_app(app.server, locale_selector=get_locale)
-app.config.update({'title': _('Boltzmann distribution')})
+##################################
+# common variables and utilities #
+##################################
 
-###########################
-# dash element definition #
-###########################
+e_max_r = [0.01, 5] # energy range
+T_r = [1, 1e4] # temperature range
+n_r = [2, 25] # number of levels range
 
-add_button = dbc.Button(_('Add plot'), id='add-button', style={'margin-bottom':5})
-panels_container = dbc.Container([], id='panels-container', fluid=True)
-title = html.H1(_("Boltzmann distribution"), id='title')
-subtitle = html.P(_("explore how each distribution changes on changing the parameters"), id='subtitle')
-info_button = dbc.Button(id='info-button', n_clicks=0, children='More info')
-info_text = dcc.Markdown('   ', mathjax=True, id='info-text')
 
-# put button and text area togheter
-info = dbc.Container([info_text, info_button])
-title_col = dbc.Col(dbc.Container([title, subtitle]), width='auto')
-info_col = dbc.Col(dbc.Container([info_text, info_button]), width='auto')
-header = dbc.Row([title_col, info_col])
+#######################################
+# set up general layout and callbacks #
+#######################################
 
-app.layout = dbc.Container([
-        header,
-        html.Hr(),
-        dbc.Row([dbc.Col(add_button, xl=6, align='left')]),
-        dbc.Row([panels_container], align='left')
-    ],
-    fluid=True
-)
+def header():
+    title_html = html.H1(_(title), id='title')
+    subtitle_html = html.P(_(subtitle), id='subtitle')
+    info_button = dbc.Button(id='info-button', n_clicks=0, children='more info')
+    # a text area that support mathjax and Latex for equations
+    info_text = dcc.Markdown('   ', mathjax=True, id='info-text')
+    # put button and text area togheter
+    title_col = dbc.Col(dbc.Container([title_html, subtitle_html]), width='auto')
+    info_col = dbc.Col(dbc.Container([info_text, info_button]), width='auto')
+    #header = dbc.Row([title_col, info_col])
+    return dbc.Row([title_col, info_col])
 
+
+@callback([Output('title', 'children'),
+           Output('subtitle', 'children')
+           ],
+          [Input('title', 'children'),
+           Input('subtitle', 'children')
+          ])
+def setup_language_general(*messages):
+    return [_(m) for m in messages]
+
+
+@callback([Output('info-button', 'children'),
+               Output('info-text', 'children')],
+              Input('info-button', 'n_clicks')
+             )
+def show_info(n_clicks):
+    '''show a short information about the model '''
+    if n_clicks%2: # button pressed for an uneven number of times
+        text = _(info)
+        button_text = _('less info') # change the label
+    else: # clicked again after showing, means hide the info
+        text = '   '
+        button_text = _('more info')
+    return button_text, text
+
+##########################
+# set up specific layout #
+##########################
 
 def panel_factory(uid):
     '''
@@ -107,36 +126,28 @@ def controls_factory(uid):
     controls : object
         controls container
     '''   
-    
     #e_max_input = dbc.Container([dbc.Label(_('Max energy (eV)'), id={'type': 'e-max-label', 'uid': uid}),
     #                             dbc.Input(id={'type': 'e-max-input', 'uid': uid}, type='number',
     #                                     min=0.01, max=5, value=0.1, debounce=True)
     #                    ])
-    
     e_max_input = dbc.Row([dbc.Col(dbc.Label(_('Max energy (eV)'), id={'type': 'e-max-label', 'uid': uid})),
                         dbc.Col(dbc.Input(id={'type': 'e-max-input', 'uid': uid}, type='number',
                                          min=e_max_r[0], max=e_max_r[1], step=0.01, value=0.1))
                          ])
-
     n_input = dbc.Row([dbc.Col(dbc.Label(_('n levels'), id={'type': 'n-label', 'uid': uid})),
                         dbc.Col(dbc.Input(id={'type': 'n-input', 'uid': uid}, type='number',
                                          min=n_r[0], max=n_r[1], value=5))
                         ])
- 
-    
     t_input = dbc.Row([dbc.Col(dbc.Label(_('temperature (K)'), id={'type': 't-label', 'uid': uid})),
                         dbc.Col(dbc.Input(id={'type': 't-input', 'uid': uid}, type='number',
                                          min=T_r[0], max=T_r[1], value=298))
                         ])
-                       
     delete_button = dbc.Col(dbc.Button(_('delete'), id={'type': 'delete-button', 'uid': uid}), width='auto')
-    
     input_row = dbc.Container([
         e_max_input,
         n_input,
         t_input
     ])
-    
     data_table = dash_table.DataTable(
         id = {'type': 'data-table', 'uid': uid},
         columns = [
@@ -150,7 +161,6 @@ def controls_factory(uid):
         page_action='none',
         style_table={'height': '300px', 'overflowY': 'auto'}
         )
-    
     controls = dbc.Container([dbc.Row([delete_button]), input_row, data_table], id={'type': 'card', 'uid': uid})
     return controls
 
@@ -193,6 +203,7 @@ def add_to_container(item, container_list, max_col=2, col_props={}, row_props={}
         container_list[-1] = row
         return container_list
 
+
 def remove_from_container(uid, container_list):
     '''
     Remove item from container
@@ -214,8 +225,8 @@ def remove_from_container(uid, container_list):
             if item['props']['id']['uid'] != uid:
                 new_container_list = add_to_container(item, new_container_list)
     return new_container_list
-    
-# utility functions
+
+
 def update_table(E, pop):
     '''
     remove energy E and sort table
@@ -224,33 +235,30 @@ def update_table(E, pop):
     data = [{'energy': e, 'population': p } for e, p in sorted(zip(E, pop.magnitude))]
     return data
 
-#############
-# Callbacks #
-#############
-@app.callback([Output('info-button', 'children'),
-               Output('info-text', 'children')],
-              Input('info-button', 'n_clicks')
-             )
-def show_info(n_clicks):
-    if n_clicks%2: #uneven number
-        text = _(r'''
-        **Boltzmann distribution** describes how $N$ molecules are distributed on different energy levels, depending on temperature. The fraction of molecules with energi $E_1$ is:  
-        
-        $$\frac{N_1}{N} = \frac{e^{-\frac{E_1}{kT}}}{Q}$$  
-        
-        Where $Q$ is the **molecular partition function**:  
-        
-        $$Q = \sum_{i} e^{-\frac{E_i}{kT}}$$  
-        
-        It is a _normalization factor_ that ensures that the total probability will be 1.
-        ''')
-        button_text = _('less info')
-    else:
-        text = '   '
-        button_text = _('more info')
-    return button_text, text
 
-@app.callback(Output('panels-container', 'children'),
+add_button = dbc.Button(_('Add plot'), id='add-button', style={'margin-bottom':5})
+panels_container = dbc.Container([], id='panels-container', fluid=True)
+layout = dbc.Container([
+        header(),
+        html.Hr(),
+        dbc.Row([dbc.Col(add_button, xl=6, align='left')]),
+        dbc.Row([panels_container], align='left')
+    ],
+    id='layout',
+    fluid=True
+)
+
+######################
+# specific callbacks #
+######################
+
+@callback([Output('add-button', 'children')],
+          [Input('add-button', 'children')])
+def setup_language_specific(*messages):
+    return [_(m) for m in messages]
+
+
+@callback(Output('panels-container', 'children'),
               [Input('add-button', 'n_clicks'),
               Input({'type':'delete-button', 'uid': ALL}, 'n_clicks')],
               State('panels-container', 'children')
@@ -273,7 +281,7 @@ def update_panels_container(add_n_clicks, clear_n_clicks, panels_container_list)
             
 
 # this is the most important function
-@app.callback([
+@callback([
                Output({'type': 'B-plot', 'uid': MATCH}, 'figure'),
                Output({'type': 'data-table', 'uid': MATCH}, 'data')
               ],
@@ -289,7 +297,6 @@ def update_plot_table(e_max, n, T):
     for val, vrange in zip((e_max, n, T), (e_max_r, n_r, T_r)):
         if (val<vrange[0]) or (val>vrange[1]):
             return go.Figure(), []
-    
     E = np.linspace(0, e_max, n)
     pop = population(E, T)
     fig = go.Figure(go.Bar(
@@ -301,18 +308,32 @@ def update_plot_table(e_max, n, T):
     table_data = update_table(E, pop)
     return fig, table_data
 
-@app.callback([
-               Output('add-button', 'children'),
-               Output('title', 'children'),
-               Output('subtitle', 'children'),
-              ],
-              [Input('add-button', 'children'),
-               Input('title', 'children'),
-               Input('subtitle', 'children'),
-              ])
-def setup_language(*messages):
-    return [_(m) for m in messages]
 
-
-if __name__ == '__main__':
+if __name__ == '__main__': # use as a standalone dash app
+    ####################
+    # Initilialize app #
+    ####################
+    # create the app
+    app = dash.Dash(__name__, external_stylesheets=[dbc.themes.BOOTSTRAP])
+    
+    def get_locale():
+        return request.accept_languages.best_match(LANGUAGES.keys())
+    
+    # intialize Flask-babel
+    babel = Babel(app.server) # app.server is the Flask app inside the dash app.
+    with app.server.app_context():
+        LANGUAGES = {l.language: l.get_language_name() for l in babel.list_translations()}
+        babel.init_app(app.server, locale_selector=get_locale)
+    app.layout = layout
     app.run_server(debug=True, host='0.0.0.0', port=5000)
+else: # use as a page in a dash multipage app
+    dash.register_page(
+        __name__,
+        path=__name__,
+        title=title,
+        name=title,
+        subtitle=subtitle,
+        info=info,
+        order=3
+)
+
