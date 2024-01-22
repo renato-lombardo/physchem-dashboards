@@ -131,9 +131,9 @@ msgstr ""
 "        "
 #: app.py:201
 msgid "less info"
-msgstr ""
+msgstr "meno informazioni"
 
 #: app.py:204
 msgid "more info"
-msgstr ""
+msgstr "più informazioni"
 

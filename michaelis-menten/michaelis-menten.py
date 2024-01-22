@@ -5,8 +5,7 @@ import dash_daq as daq
 import plotly.express as px
 import plotly.graph_objs as go
 import re
-from dash import dcc
-from dash import html
+from dash import callback, dcc, html
 from dash.dependencies import Input, Output, State, MATCH, ALL
 from dash.exceptions import PreventUpdate
 from flask import Flask, request
@@ -16,31 +15,92 @@ from model import michaelis_menten
 # define translator function
 _ = gettext
 
+#########################
+# Dashboard information #
+#########################
+title = _("Michaelis-Menten kinetics")
+subtitle = _("explore how changing parameters affects the kinetics")
+info = _(r'''
+        **Michaelis-Menten kinetics** is a kinetic mechanism describing simple enzyme catalized reactions in which a substrate, $\text{S}$, is converted in a product, $\text{P}$, in the presence of an enzyme, $\text{E}$.
+        
+        This mechanism was developed to explain the plot of the dependance of the initial rate, $v_0$, as a function of substrate concentration $[\text{S}]$ and can be can be schematized as
+        
+        $$\text{E} + \text{S} \overset{k_1}{\underset{k_{-1}}{\rightleftharpoons}} \text{ES} \overset{k_2}{\rightarrow} \text{E} + \text{P}$$
+        
+        In such mechanism $v_0$ will be
+        
+        $$v_0 = \frac{k_2[\text{E}]_0[\text{S}]}{K_M + [\text{S}]}$$
+        
+        where $[\text{E}]_0$ is the initial concentratin of the enzyme and $K_M$ is the **Michaelis constant**
+        
+        $$K_M = \frac{k_{-1}+k_2}{k_1}$$
+        
+        At high $[\text{S}]$ values the plot tends to a saturation value, the **limiting rate** $v_{max}$:
+        
+        $$v_{max}=k_2[\text{E}]_0$$
+        
+        In the presence of an **inhibitor**, $\text{I}$, the enzyme efficency can be reduced. There are different types of inhibitors with different mechanisms and kinetic effects.
+        
+        The analysis of kinetics inhibition is often conducted using the **Lineweaver-Burk plots** of $\frac{1}{v_0} vs. \frac{1}{[\text{S}]}$
+        
+        $$\frac{1}{v_0}=\frac{K_M}{v_{max}[\text{S}]}+\frac{1}{v_{max}}$$
+        
+        ''')
+order = 8
+
+
+##################################
+# common variables and utilities #
+##################################
+
+# colors for plotting different curves
 colors = px.colors.qualitative.Plotly
 
-####################
-# Initilialize app #
-####################
-# create the app
-app = dash.Dash(__name__, external_stylesheets=[dbc.themes.BOOTSTRAP])
+#######################################
+# set up general layout and callbacks #
+#######################################
 
-# use language that best matches the browser
-
-# utility function for locale selection
-def get_locale():
-    return request.accept_languages.best_match(LANGUAGES.keys())
-
-# intialize Flask-babel
-babel = Babel(app.server) # app.server is the Flask app inside the dash app.
-with app.server.app_context():
-    LANGUAGES = {l.language: l.get_language_name() for l in babel.list_translations()}
-    babel.init_app(app.server, locale_selector=get_locale)
-app.config.update({'title': _('Michaelis-Menten kinetics')})
+def header():
+    title_html = html.H1(_(title), id='title')
+    subtitle_html = html.P(_(subtitle), id='subtitle')
+    info_button = dbc.Button(id='info-button', n_clicks=0, children='more info')
+    # a text area that support mathjax and Latex for equations
+    info_text = dcc.Markdown('   ', mathjax=True, id='info-text')
+    # put button and text area togheter
+    title_col = dbc.Col(dbc.Container([title_html, subtitle_html]), width='auto')
+    info_col = dbc.Col(dbc.Container([info_text, info_button]), width='auto')
+    #header = dbc.Row([title_col, info_col])
+    return dbc.Row([title_col, info_col])
 
 
-###########################
-# dash element definition #
-###########################
+@callback([Output('title', 'children'),
+           Output('subtitle', 'children')
+           ],
+          [Input('title', 'children'),
+           Input('subtitle', 'children')
+          ])
+def setup_language_general(*messages):
+    return [_(m) for m in messages]
+
+
+@callback([Output('info-button', 'children'),
+               Output('info-text', 'children')],
+              Input('info-button', 'n_clicks')
+             )
+def show_info(n_clicks):
+    '''show a short information about the model '''
+    if n_clicks%2: # button pressed for an uneven number of times
+        text = _(info)
+        button_text = _('less info') # change the label
+    else: # clicked again after showing, means hide the info
+        text = '   '
+        button_text = _('more info')
+    return button_text, text
+
+
+##########################
+# set up specific layout #
+##########################
 
 def controls_card_factory(uid=None):
     KM_input = dbc.Col(dbc.Row([
@@ -131,80 +191,31 @@ S_slider = dbc.Container([dbc.Label("[S] max = 0.5 mol/L", id='S-output'),
 controls_container = dbc.Container([], id='controls-container', fluid=True)
 plot_MM = dcc.Graph(id='plot-MM', style={'height': '60vh'}) # Michaelis-Menten
 plot_LB = dcc.Graph(id='plot-LB', style={'height': '60vh'}) # Lineweaver-Burk
-title = html.H1(_("Michaelis-Menten kinetics"), id='title')
-subtitle = html.P(_("explore how changing parameters affects the kinetics"), id='subtitle')
 
 left = dbc.Container([add_button, S_slider, html.Hr(), controls_container])
 right = dbc.Row([dbc.Col(plot_MM), dbc.Col(plot_LB)])
 
 
-# define the information widget. On clicking the info_button a short description of the model
-# is shown
-info_button = dbc.Button(id='info-button', n_clicks=0, children='More info')
-# a text area that support mathjax and Latex for equations
-info_text = dcc.Markdown('   ', mathjax=True, id='info-text')
-# put button and text area togheter
-info = dbc.Container([info_text, info_button])
-
-title_col = dbc.Col(dbc.Container([title, subtitle]), width='auto')
-info_col = dbc.Col(dbc.Container([info_text, info_button]), width='auto')
-header = dbc.Row([title_col, info_col])
-
-app.layout = dbc.Container([
-    header,
+def layout():
+    layout = dbc.Container([
+    header(),
     html.Hr(),
     dbc.Row([
         dbc.Col(left, xl=4,  align='right'),
         dbc.Col(right, xl=8, align='left')
         ])
     ],
-    fluid=True
+    fluid=True,
+    id='layout'
     )
-
-   
-#############
-# Callbacks #
-#############
-@app.callback([Output('info-button', 'children'),
-               Output('info-text', 'children')],
-              Input('info-button', 'n_clicks')
-             )
-def show_info(n_clicks):
-    if n_clicks%2: #uneven number
-        text = _(r'''
-        **Michaelis-Menten kinetics** is a kinetic mechanism describing simple enzyme catalized reactions in which a substrate, $\text{S}$, is converted in a product, $\text{P}$, in the presence of an enzyme, $\text{E}$.
-        
-        This mechanism was developed to explain the plot of the dependance of the initial rate, $v_0$, as a function of substrate concentration $[\text{S}]$ and can be can be schematized as
-        
-        $$\text{E} + \text{S} \overset{k_1}{\underset{k_{-1}}{\rightleftharpoons}} \text{ES} \overset{k_2}{\rightarrow} \text{E} + \text{P}$$
-        
-        In such mechanism $v_0$ will be
-        
-        $$v_0 = \frac{k_2[\text{E}]_0[\text{S}]}{K_M + [\text{S}]}$$
-        
-        where $[\text{E}]_0$ is the initial concentratin of the enzyme and $K_M$ is the **Michaelis constant**
-        
-        $$K_M = \frac{k_{-1}+k_2}{k_1}$$
-        
-        At high $[\text{S}]$ values the plot tends to a saturation value, the **limiting rate** $v_{max}$:
-        
-        $$v_{max}=k_2[\text{E}]_0$$
-        
-        In the presence of an **inhibitor**, $\text{I}$, the enzyme efficency can be reduced. There are different types of inhibitors with different mechanisms and kinetic effects.
-        
-        The analysis of kinetics inhibition is often conducted using the **Lineweaver-Burk plots** of $\frac{1}{v_0} vs. \frac{1}{[\text{S}]}$
-        
-        $$\frac{1}{v_0}=\frac{K_M}{v_{max}[\text{S}]}+\frac{1}{v_{max}}$$
-        
-        ''')
-        button_text = _('less info')
-    else:
-        text = '   '
-        button_text = _('more info')
-    return button_text, text
+    return layout
 
 
-@app.callback(Output('controls-container', 'children'),
+######################
+# specific callbacks #
+######################
+
+@callback(Output('controls-container', 'children'),
               [Input('add-button', 'n_clicks'),
                Input({'type':'clear-button', 'uid': ALL}, 'n_clicks')],
               State('controls-container', 'children')
@@ -225,13 +236,13 @@ def update_controls_container(add_n_clicks, clear_n_clicks, controls_container_l
         else:
             raise PreventUpdate # needed when app starts         
 
-@app.callback(Output({'type':'S-output', 'uid': MATCH}, 'children'),
+@callback(Output({'type':'S-output', 'uid': MATCH}, 'children'),
               Input({'type':'S-slider', 'uid': MATCH}, 'value'))
 def update_S_slider(val):
     return f"[S] max = {val} mol/L"
             
 # this is the most important function
-@app.callback([Output('plot-MM', 'figure'),
+@callback([Output('plot-MM', 'figure'),
                Output('plot-LB', 'figure'),
                Output({'type':'controls-card', 'uid': ALL}, 'style')
               ],
@@ -280,18 +291,35 @@ def update_plots(Smax, KM_vals, k2_vals, E0_vals, I_vals, KI_vals, I_type_vals, 
     plot_LB.add_vline(x=0)
     return plot_MM, plot_LB, new_styles
 
-@app.callback([
-               Output('add-button', 'children'),
-               Output('title', 'children'),
-               Output('subtitle', 'children'),
-              ],
-              [Input('add-button', 'children'),
-               Input('title', 'children'),
-               Input('subtitle', 'children'),
-              ])
-def setup_language(*messages):
+@callback([Output('add-button', 'children')],
+          [Input('add-button', 'children')])
+def setup_language_specific(*messages):
     return [_(m) for m in messages]
 
-
 if __name__ == '__main__':
+    ####################
+    # Initilialize app #
+    ####################
+    # create the app
+    app = dash.Dash(__name__, external_stylesheets=[dbc.themes.BOOTSTRAP])
+    
+    def get_locale():
+        return request.accept_languages.best_match(LANGUAGES.keys())
+    
+    # intialize Flask-babel
+    babel = Babel(app.server) # app.server is the Flask app inside the dash app.
+    with app.server.app_context():
+        LANGUAGES = {l.language: l.get_language_name() for l in babel.list_translations()}
+        babel.init_app(app.server, locale_selector=get_locale)
+    app.layout = layout()
     app.run_server(debug=True, host='0.0.0.0', port=5000)
+else: # use as a page in a dash multipage app
+    dash.register_page(
+        __name__,
+        path=__name__,
+        title=title,
+        name=title,
+        subtitle=subtitle,
+        info=info,
+        order=order
+)
