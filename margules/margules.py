@@ -5,8 +5,7 @@ import dash_daq as daq
 import plotly.express as px
 import plotly.graph_objs as go
 import re
-from dash import dcc
-from dash import html
+from dash import callback, dcc, html
 from dash.dependencies import Input, Output, State, MATCH, ALL
 from dash.exceptions import PreventUpdate
 from flask import Flask, request
@@ -18,56 +17,76 @@ _ = gettext
 
 colors = px.colors.qualitative.Plotly
 
-####################
-# Initilialize app #
-####################
-# create the app
-app = dash.Dash(__name__, external_stylesheets=[dbc.themes.BOOTSTRAP])
+#########################
+# Dashboard information #
+#########################
+title = _("Regular solutions")
+subtitle = _("explore how miscibilty changes on changing the enthalpy of mixing")
+info =   _(r'''
+        Mixing two liquids 1 and 2 requires that the **Gibbs Energy of mixing** must be negative:  
+       
+        $$\Delta_{mix} G  = nRT(\chi_1 ln \chi_1 + \chi_2 ln \chi_2) + \Delta_{mix} H$$
 
-# use language that best matches the browser
+        For **regular solutions** the enthalpy of mixing can be expressed in terms of the molar fractions and a specific parameter $\beta$: 
+        
+        $$\Delta_{mix} H  =  n \beta\cdot\chi_1\cdot\chi_2$$
+        
+        So that it is posssible to use **Margules equation** to calculate $\Delta_{mix}G$:  
+        
+        $$\Delta_{mix} G  = nRT(\chi_1 ln \chi_1 + \chi_2 ln \chi_2) + n \beta\cdot\chi_1\cdot\chi_2$$        
 
-# utility function for locale selection
-def get_locale():
-    return request.accept_languages.best_match(LANGUAGES.keys())
+        On increasing the parameter $\beta$, the enthalpy of mixing increases and the solubility of 1 in 2 decreases. When $\frac{\beta}{RT}>2$ **demixing** is observed with the
+        formation of two minima in the curve that correspond to two different phases.
+        ''')
+order = 4
 
-# intialize Flask-babel
-babel = Babel(app.server) # app.server is the Flask app inside the dash app.
-with app.server.app_context():
-    LANGUAGES = {l.language: l.get_language_name() for l in babel.list_translations()}
-    babel.init_app(app.server, locale_selector=get_locale)
-app.config.update({'title': _('Regular solutions')})
+#######################################
+# set up general layout and callbacks #
+#######################################
 
-###########################
-# dash element definition #
-###########################
+def header():
+    title_html = html.H1(_(title), id='title')
+    subtitle_html = html.P(_(subtitle), id='subtitle')
+    info_button = dbc.Button(id='info-button', n_clicks=0, children='more info')
+    # a text area that support mathjax and Latex for equations
+    info_text = dcc.Markdown('   ', mathjax=True, id='info-text')
+    # put button and text area togheter
+    title_col = dbc.Col(dbc.Container([title_html, subtitle_html]), width='auto')
+    info_col = dbc.Col(dbc.Container([info_text, info_button]), width='auto')
+    #header = dbc.Row([title_col, info_col])
+    return dbc.Row([title_col, info_col])
 
-add_button = dbc.Button(_('Add plot'), id='add-button', style={'margin-bottom':5})
-controls_container = dbc.Container([], id='controls-container', fluid=True)
-plot = dcc.Graph(id='plot', style={'height': '80vh'})
-title = html.H1(_("Regular solutions"), id='title')
-subtitle = html.P(_("explore how miscibilty changes on changing the enthalpy of mixing"), id='subtitle')
-info_button = dbc.Button(id='info-button', n_clicks=0, children='More info')
-info_text = dcc.Markdown('   ', mathjax=True, id='info-text')
-# put button and text area togheter
-info = dbc.Container([info_text, info_button])
 
-title_col = dbc.Col(dbc.Container([title, subtitle]), width='auto')
-info_col = dbc.Col(dbc.Container([info_text, info_button]), width='auto')
-header = dbc.Row([title_col, info_col])
-# Layout of the app with all the widgets
-app.layout = dbc.Container([
-    header,
-    html.Hr(),
-    add_button,
-    dbc.Row([
-        dbc.Col(controls_container, align='left'),
-        dbc.Col([plot], xl=8, align='left')
-        ])
-    ],
-    fluid=True
-    )
+@callback([Output('title', 'children'),
+           Output('subtitle', 'children')
+           ],
+          [Input('title', 'children'),
+           Input('subtitle', 'children')
+          ])
+def setup_language_general(*messages):
+    return [_(m) for m in messages]
 
-                         
+
+@callback([Output('info-button', 'children'),
+               Output('info-text', 'children')],
+              Input('info-button', 'n_clicks')
+             )
+def show_info(n_clicks):
+    '''show a short information about the model '''
+    if n_clicks%2: # button pressed for an uneven number of times
+        text = _(info)
+        button_text = _('less info') # change the label
+    else: # clicked again after showing, means hide the info
+        text = '   '
+        button_text = _('more info')
+    return button_text, text
+
+
+##########################
+# set up specific layout #
+##########################
+
+                        
 def controls_factory(uid):
     '''
     generate a container with all the controls
@@ -134,38 +153,38 @@ def controls_factory(uid):
                             id={'type': 'controls-card', 'uid': uid}, style={'margin-bottom':5})
     return controls
 
-#############
-# Callbacks #
-#############
-@app.callback([Output('info-button', 'children'),
-               Output('info-text', 'children')],
-              Input('info-button', 'n_clicks')
-             )
-def show_info(n_clicks):
-    if n_clicks%2: #uneven number
-        text = _(r'''
-        Mixing two liquids 1 and 2 requires that the **Gibbs Energy of mixing** must be negative:  
-       
-        $$\Delta_{mix} G  = nRT(\chi_1 ln \chi_1 + \chi_2 ln \chi_2) + \Delta_{mix} H$$
 
-        For **regular solutions** the enthalpy of mixing can be expressed in terms of the molar fractions and a specific parameter $\beta$: 
-        
-        $$\Delta_{mix} H  =  n \beta\cdot\chi_1\cdot\chi_2$$
-        
-        So that it is posssible to use **Margules equation** to calculate $\Delta_{mix}G$:  
-        
-        $$\Delta_{mix} G  = nRT(\chi_1 ln \chi_1 + \chi_2 ln \chi_2) + n \beta\cdot\chi_1\cdot\chi_2$$        
+add_button = dbc.Button(_('Add plot'), id='add-button', style={'margin-bottom':5})
+controls_container = dbc.Container([], id='controls-container', fluid=True)
+plot = dcc.Graph(id='plot', style={'height': '80vh'})
 
-        On increasing the parameter $\beta$, the enthalpy of mixing increases and the solubility of 1 in 2 decreases. When $\frac{\beta}{RT}>2$ **demixing** is observed with the
-        formation of two minima in the curve that correspond to two different phases.
-        ''')
-        button_text = _('less info')
-    else:
-        text = '   '
-        button_text = _('more info')
-    return button_text, text
+# Layout of the app with all the widgets
+def layout():
+    layout = dbc.Container([
+    header(),
+    html.Hr(),
+    add_button,
+    dbc.Row([
+        dbc.Col(controls_container, align='left'),
+        dbc.Col([plot], xl=8, align='left')
+        ])
+    ],
+    fluid=True,
+    id='layout'
+    )
+    return layout
 
-@app.callback(Output('controls-container', 'children'),
+ 
+######################
+# specific callbacks #
+######################
+
+@callback([Output('add-button', 'children')],
+          [Input('add-button', 'children')])
+def setup_language_specific(*messages):
+    return [_(m) for m in messages]
+    
+@callback(Output('controls-container', 'children'),
               [Input('add-button', 'n_clicks'),
                Input({'type':'delete-button', 'uid': ALL}, 'n_clicks')],
               State('controls-container', 'children')
@@ -188,7 +207,7 @@ def update_controls_container(add_n_clicks, clear_n_clicks, controls_container_l
             
 
 # this is the most important function
-@app.callback([Output('plot', 'figure'),
+@callback([Output('plot', 'figure'),
                Output({'type':'controls-card', 'uid': ALL}, 'style'),
                Output({'type':'x1-min', 'uid': ALL}, 'children'),
                Output({'type':'x1-max', 'uid': ALL}, 'children')],
@@ -241,18 +260,31 @@ def update_plot(beta_list, T_list, DG_list, DS_list, DH_list, minima_list, style
     layout = {'xaxis': {'title': _('\u03C7\u2081'), 'range': (0,1)}, 'yaxis': {'title': _('Energy kJ/mol')}}
     return go.Figure(data=data, layout=layout), new_styles, x1_min_values, x1_max_values
 
-@app.callback([
-               Output('add-button', 'children'),
-               Output('title', 'children'),
-               Output('subtitle', 'children'),
-              ],
-              [Input('add-button', 'children'),
-               Input('title', 'children'),
-               Input('subtitle', 'children'),
-              ])
-def setup_language(*messages):
-    return [_(m) for m in messages]
-
 
 if __name__ == '__main__':
+    ####################
+    # Initilialize app #
+    ####################
+    # create the app
+    app = dash.Dash(__name__, external_stylesheets=[dbc.themes.BOOTSTRAP])
+    
+    def get_locale():
+        return request.accept_languages.best_match(LANGUAGES.keys())
+    
+    # intialize Flask-babel
+    babel = Babel(app.server) # app.server is the Flask app inside the dash app.
+    with app.server.app_context():
+        LANGUAGES = {l.language: l.get_language_name() for l in babel.list_translations()}
+        babel.init_app(app.server, locale_selector=get_locale)
+    app.layout = layout()
     app.run_server(debug=True, host='0.0.0.0', port=5000)
+else: # use as a page in a dash multipage app
+    dash.register_page(
+        __name__,
+        path=__name__,
+        title=title,
+        name=title,
+        subtitle=subtitle,
+        info=info,
+        order=order
+)
