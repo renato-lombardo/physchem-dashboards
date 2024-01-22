@@ -2,8 +2,7 @@ import numpy as np
 import dash
 import dash_bootstrap_components as dbc
 import plotly.graph_objs as go
-from dash import dcc
-from dash import html
+from dash import callback, dcc, html
 from dash.dependencies import Input, Output, State
 from flask import Flask, request
 from flask_babel import Babel, gettext
@@ -13,39 +12,66 @@ from model import Ehrenfest
 # define translator function
 _ = gettext
 
+#########################
+# Dashboard information #
+#########################
+title = _('Ehrenfest model')
+subtitle = _('observe gas expansion')
+info = _(r'''
+    The **Ehrenfest model** is a simple representation of what happens during the expansion of a perfect gas. In this applet you can choose how many particles to put initially in box A and box B and how many steps of the model to simulate. After that, you can create the simulation by clicking on **generate** and observe what happens clicking on **play**. The plot  on the right top shows the fraction of particles, $f$, in the boxes ad each instant:  
+    $$f_A = \frac{N_A}{N}$$
+    while the plot a the right bottom shows the probability distribution of a **fluctuation**, at each instant. The fluctuation is the difference of population between the boxes divided by the total number of particles in the system:  
+    
+    $$fluct = \frac{N_A- N_B}{N}$$
+    
+    ''')
+order = 5
 
-####################
-# Initilialize app #
-####################
-# create the app
-app = dash.Dash(__name__, external_stylesheets=[dbc.themes.BOOTSTRAP])
+#######################################
+# set up general layout and callbacks #
+#######################################
 
-# use language that best matches the browser
+def header():
+    title_html = html.H1(_(title), id='title')
+    subtitle_html = html.P(_(subtitle), id='subtitle')
+    info_button = dbc.Button(id='info-button', n_clicks=0, children='more info')
+    # a text area that support mathjax and Latex for equations
+    info_text = dcc.Markdown('   ', mathjax=True, id='info-text')
+    # put button and text area togheter
+    title_col = dbc.Col(dbc.Container([title_html, subtitle_html]), width='auto')
+    info_col = dbc.Col(dbc.Container([info_text, info_button]), width='auto')
+    #header = dbc.Row([title_col, info_col])
+    return dbc.Row([title_col, info_col])
 
-# utility function for locale selection
-def get_locale():
-    return request.accept_languages.best_match(LANGUAGES.keys())
 
-# intialize Flask-babel
-babel = Babel(app.server) # app.server is the Flask app inside the dash app.
-with app.server.app_context():
-    LANGUAGES = {l.language: l.get_language_name() for l in babel.list_translations()}
-    babel.init_app(app.server, locale_selector=get_locale)
-app.config.update({'title': _('Ehrenfest model')})
+@callback([Output('title', 'children'),
+           Output('subtitle', 'children')
+           ],
+          [Input('title', 'children'),
+           Input('subtitle', 'children')
+          ])
+def setup_language_general(*messages):
+    return [_(m) for m in messages]
 
-#####################
-# set up app layout #
-#####################
-title = html.H1(_('Ehrenfest model'), id='title')
-subtitle = html.P(_('observe gas expansion'), id='subtitle')
-info_button = dbc.Button(id='info-button', n_clicks=0, children='More info')
-info_text = dcc.Markdown('   ', mathjax=True, id='info-text')
-#info = dbc.Row([dbc.Col(info_button), dbc.Col(info_text)])
 
-title_col = dbc.Col(dbc.Container([title, subtitle]), width='auto')
-info_col = dbc.Col(dbc.Container([info_text, info_button]), width='auto')
+@callback([Output('info-button', 'children'),
+               Output('info-text', 'children')],
+              Input('info-button', 'n_clicks')
+             )
+def show_info(n_clicks):
+    '''show a short information about the model '''
+    if n_clicks%2: # button pressed for an uneven number of times
+        text = _(info)
+        button_text = _('less info') # change the label
+    else: # clicked again after showing, means hide the info
+        text = '   '
+        button_text = _('more info')
+    return button_text, text
 
-header = dbc.Row([title_col, info_col])
+
+##########################
+# set up specific layout #
+##########################
 
 steps_input = dbc.Row([dbc.Col(dbc.Label(_('steps'), id='steps-label'), md=2),
                        dbc.Col(dbc.Input(id = 'steps-input', type='number',
@@ -72,56 +98,36 @@ commands = dbc.Container([dbc.Row([dbc.Col(nA_input),]),
 
 graph = dcc.Graph(id='plot', config= {'displayModeBar': False})
 
-app.layout = dbc.Container([
-                            header,
-                            html.Hr(),
-                            dbc.Row([dbc.Col(commands, md=2), dbc.Col(graph, md=8),],
-                                     align="center",)
-                            ], fluid=True)
+def layout():
+    layout = dbc.Container([
+    header(),
+    html.Hr(),
+    dbc.Row([dbc.Col(commands, md=2), dbc.Col(graph, md=8),],
+             align="center",)
+    ],
+    fluid=True,
+    id ='layout'
+    )
+    return layout
 
-    
-#############
-# Callbacks #
-#############
+######################
+# specific callbacks #
+######################
 
-@app.callback([Output('info-button', 'children'),
-               Output('info-text', 'children')],
-              Input('info-button', 'n_clicks')
-             )
-def show_info(n_clicks):
-    if n_clicks%2: #uneven number
-        text = _(r'''
-        The **Ehrenfest model** is a simple representation of what happens during the expansion of a perfect gas. In this applet you can choose how many particles to put initially in box A and box B and how many steps of the model to simulate. After that, you can create the simulation by clicking on **generate** and observe what happens clicking on **play**. The plot  on the right top shows the fraction of particles, $f$, in the boxes ad each instant:  
-        $$f_A = \frac{N_A}{N}$$
-        while the plot a the right bottom shows the probability distribution of a **fluctuation**, at each instant. The fluctuation is the difference of population between the boxes divided by the total number of particles in the system:  
-        
-        $$fluct = \frac{N_A- N_B}{N}$$
-        
-        ''')
-        button_text = _('less info')
-    else:
-        text = '   '
-        button_text = _('more info')
-    return button_text, text
-
-@app.callback([Output('steps-label', 'children'),
+@callback([Output('steps-label', 'children'),
                Output('generate-button', 'children'),
                Output('nA-label', 'children'),
                Output('nB-label', 'children'),
-               Output('title', 'children'),
-               Output('subtitle', 'children'),
               ],
               [Input('steps-label', 'children'),
                Input('generate-button', 'children'),
                Input('nA-label', 'children'),
                Input('nB-label', 'children'),
-               Input('title', 'children'),
-               Input('subtitle', 'children'),
               ])
-def setup_language(*messages):
+def setup_language_specific(*messages):
     return [_(m) for m in messages]
 
-@app.callback(Output('plot', 'figure'),
+@callback(Output('plot', 'figure'),
               [Input('generate-button', 'n_clicks')],
               [State('nA-input', 'value'),
                State('nB-input', 'value'),
@@ -226,4 +232,29 @@ def generate_animation(n_clicks, nA, nB, nsteps):
 
 
 if __name__ == '__main__':
+    ####################
+    # Initilialize app #
+    ####################
+    # create the app
+    app = dash.Dash(__name__, external_stylesheets=[dbc.themes.BOOTSTRAP])
+    
+    def get_locale():
+        return request.accept_languages.best_match(LANGUAGES.keys())
+    
+    # intialize Flask-babel
+    babel = Babel(app.server) # app.server is the Flask app inside the dash app.
+    with app.server.app_context():
+        LANGUAGES = {l.language: l.get_language_name() for l in babel.list_translations()}
+        babel.init_app(app.server, locale_selector=get_locale)
+    app.layout = layout()
     app.run_server(debug=True, host='0.0.0.0', port=5000)
+else: # use as a page in a dash multipage app
+    dash.register_page(
+        __name__,
+        path=__name__,
+        title=title,
+        name=title,
+        subtitle=subtitle,
+        info=info,
+        order=order
+)
