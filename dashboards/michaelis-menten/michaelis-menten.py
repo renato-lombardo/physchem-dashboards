@@ -10,7 +10,15 @@ from dash.dependencies import Input, Output, State, MATCH, ALL
 from dash.exceptions import PreventUpdate
 from flask import Flask, request
 from flask_babel import Babel, gettext
-from model import michaelis_menten
+try: # when running as an independent app
+    from model import michaelis_menten
+except: # when running in a multipage dashboard
+    from .model import michaelis_menten
+try: # when running as an independent app
+    from utilities import _id, common_setup
+except Exception as e: # when running in a multipage dashboard
+    from .utilities import _id, common_setup
+    
 
 # define translator function
 _ = gettext
@@ -59,7 +67,9 @@ colors = px.colors.qualitative.Plotly
 #######################################
 # set up general layout and callbacks #
 #######################################
+header, setup_language_general, show_info = common_setup(title, subtitle, info)
 
+"""
 def header():
     title_html = html.H1(_(title), id='title')
     subtitle_html = html.P(_(subtitle), id='subtitle')
@@ -96,7 +106,7 @@ def show_info(n_clicks):
         text = '   '
         button_text = _('more info')
     return button_text, text
-
+"""
 
 ##########################
 # set up specific layout #
@@ -109,7 +119,7 @@ def controls_card_factory(uid=None):
                           step = 0.001,
                           type='number',
                           min=0.001,
-                          id={'type': 'KM-input', 'uid': uid}
+                          id={'type': _id('KM-input'), 'uid': uid}
                          ))
     ]))
                                       
@@ -119,7 +129,7 @@ def controls_card_factory(uid=None):
                           step = 0.01,
                           type='number',
                           min=0.01,
-                          id={'type': 'k2-input', 'uid': uid}
+                          id={'type': _id('k2-input'), 'uid': uid}
                          ))
     ]))
     
@@ -130,7 +140,7 @@ def controls_card_factory(uid=None):
                           step = 0.1,
                           type='number',
                           min=0.1,
-                          id={'type': 'E0-input', 'uid': uid}
+                          id={'type': _id('E0-input'), 'uid': uid}
                          ))
     ]))
     
@@ -140,7 +150,7 @@ def controls_card_factory(uid=None):
                           step = 0.1,
                           type='number',
                           min=0,
-                          id={'type': 'I-input', 'uid': uid}
+                          id={'type': _id('I-input'), 'uid': uid}
                          ))
     ]))
     
@@ -151,11 +161,11 @@ def controls_card_factory(uid=None):
                           step = 0.1,
                           type='number',
                           min=0,
-                          id={'type': 'KI-input', 'uid': uid}
+                          id={'type': _id('KI-input'), 'uid': uid}
                          ))
     ]))
     
-    I_type_dropdown = dbc.Col(dcc.Dropdown(id={'type': 'I-type-dropdown', 'uid':uid},
+    I_type_dropdown = dbc.Col(dcc.Dropdown(id={'type': _id('I-type-dropdown'), 'uid':uid},
                                    options=[
                                        {'label': _('competitive'), 'value': 'competitive'},
                                         {'label': _('noncompetitive'), 'value': 'noncompetitive'},
@@ -164,22 +174,22 @@ def controls_card_factory(uid=None):
                                    value='competitive'))
 
 
-    clear_button = dbc.Button(_('Delete'), id={'type':'clear-button', 'uid':uid})    
+    clear_button = dbc.Button(_('Delete'), id={'type':_id('clear-button'), 'uid':uid})    
     
     
     kinetics = dbc.Row([KM_input, k2_input, E0_input])
     inhibition = dbc.Row([I_input, KI_input, I_type_dropdown])
     
     controls_card = dbc.Card([kinetics, html.Hr(), inhibition, html.Hr(), clear_button ], body=True,
-                             id={'type':'controls-card', 'uid':uid}, style={'margin-bottom':5})
+                             id={'type':_id('controls-card'), 'uid':uid}, style={'margin-bottom':5})
     return controls_card
 
 
-add_button = dbc.Button(_('Add plot'), id='add-button', style={'margin-bottom':5})
+add_button = dbc.Button(_('Add plot'), id=_id('add-button'), style={'margin-bottom':5})
 
 
-S_slider = dbc.Container([dbc.Label("[S] max = 0.5 mol/L", id='S-output'),
-                          dcc.Slider(id = 'S-slider',
+S_slider = dbc.Container([dbc.Label("[S] max = 0.5 mol/L", id=_id('S-output')),
+                          dcc.Slider(id = _id('S-slider'),
                                      min=0.1, max=5, step=0.1,
                                      marks={1: '1',
                                             2: '2',
@@ -188,9 +198,9 @@ S_slider = dbc.Container([dbc.Label("[S] max = 0.5 mol/L", id='S-output'),
                                             5: '5'},
                                      value=0.5)])
 
-controls_container = dbc.Container([], id='controls-container', fluid=True)
-plot_MM = dcc.Graph(id='plot-MM', style={'height': '60vh'}) # Michaelis-Menten
-plot_LB = dcc.Graph(id='plot-LB', style={'height': '60vh'}) # Lineweaver-Burk
+controls_container = dbc.Container([], id=_id('controls-container'), fluid=True)
+plot_MM = dcc.Graph(id=_id('plot-MM'), style={'height': '60vh'}) # Michaelis-Menten
+plot_LB = dcc.Graph(id=_id('plot-LB'), style={'height': '60vh'}) # Lineweaver-Burk
 
 left = dbc.Container([add_button, S_slider, html.Hr(), controls_container])
 right = dbc.Row([dbc.Col(plot_MM), dbc.Col(plot_LB)])
@@ -206,7 +216,7 @@ def layout():
         ])
     ],
     fluid=True,
-    id='layout'
+    id=_id('layout')
     )
     return layout
 
@@ -215,10 +225,10 @@ def layout():
 # specific callbacks #
 ######################
 
-@callback(Output('controls-container', 'children'),
-              [Input('add-button', 'n_clicks'),
-               Input({'type':'clear-button', 'uid': ALL}, 'n_clicks')],
-              State('controls-container', 'children')
+@callback(Output(_id('controls-container'), 'children'),
+              [Input(_id('add-button'), 'n_clicks'),
+               Input({'type':_id('clear-button'), 'uid': ALL}, 'n_clicks')],
+              State(_id('controls-container'), 'children')
              )
 def update_controls_container(add_n_clicks, clear_n_clicks, controls_container_list):
     '''update container adding or removing controls as required'''
@@ -236,25 +246,25 @@ def update_controls_container(add_n_clicks, clear_n_clicks, controls_container_l
         else:
             raise PreventUpdate # needed when app starts         
 
-@callback(Output({'type':'S-output', 'uid': MATCH}, 'children'),
-              Input({'type':'S-slider', 'uid': MATCH}, 'value'))
+@callback(Output({'type':_id('S-output'), 'uid': MATCH}, 'children'),
+              Input({'type':_id('S-slider'), 'uid': MATCH}, 'value'))
 def update_S_slider(val):
     return f"[S] max = {val} mol/L"
             
 # this is the most important function
-@callback([Output('plot-MM', 'figure'),
-               Output('plot-LB', 'figure'),
-               Output({'type':'controls-card', 'uid': ALL}, 'style')
+@callback([Output(_id('plot-MM'), 'figure'),
+               Output(_id('plot-LB'), 'figure'),
+               Output({'type':_id('controls-card'), 'uid': ALL}, 'style')
               ],
-              [Input('S-slider', 'value'),
-               Input({'type':'KM-input', 'uid': ALL}, 'value'),
-               Input({'type':'k2-input', 'uid': ALL}, 'value'),
-               Input({'type':'E0-input', 'uid': ALL}, 'value'),
-               Input({'type':'I-input', 'uid': ALL}, 'value'),
-               Input({'type':'KI-input', 'uid': ALL}, 'value'),
-               Input({'type':'I-type-dropdown', 'uid': ALL}, 'value')
+              [Input(_id('S-slider'), 'value'),
+               Input({'type':_id('KM-input'), 'uid': ALL}, 'value'),
+               Input({'type':_id('k2-input'), 'uid': ALL}, 'value'),
+               Input({'type':_id('E0-input'), 'uid': ALL}, 'value'),
+               Input({'type':_id('I-input'), 'uid': ALL}, 'value'),
+               Input({'type':_id('KI-input'), 'uid': ALL}, 'value'),
+               Input({'type':_id('I-type-dropdown'), 'uid': ALL}, 'value')
               ],
-              [State({'type':'controls-card', 'uid': ALL}, 'style')]
+              [State({'type':_id('controls-card'), 'uid': ALL}, 'style')]
              )
 def update_plots(Smax, KM_vals, k2_vals, E0_vals, I_vals, KI_vals, I_type_vals, styles):
     data_MM = []
@@ -291,8 +301,8 @@ def update_plots(Smax, KM_vals, k2_vals, E0_vals, I_vals, KI_vals, I_type_vals, 
     plot_LB.add_vline(x=0)
     return plot_MM, plot_LB, new_styles
 
-@callback([Output('add-button', 'children')],
-          [Input('add-button', 'children')])
+@callback([Output(_id('add-button'), 'children')],
+          [Input(_id('add-button'), 'children')])
 def setup_language_specific(*messages):
     return [_(m) for m in messages]
 
@@ -314,12 +324,13 @@ if __name__ == '__main__':
     app.layout = layout()
     app.run_server(debug=True, host='0.0.0.0', port=5000)
 else: # use as a page in a dash multipage app
+    translation = __name__.rsplit('.',1)[0].replace('.', '/') + '/translations'
     dash.register_page(
         __name__,
-        path=__name__,
         title=title,
         name=title,
         subtitle=subtitle,
         info=info,
-        order=order
+        order=order,
+        translation=translation
 )

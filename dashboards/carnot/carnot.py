@@ -8,7 +8,15 @@ from dash.exceptions import PreventUpdate
 from dash.dash_table.Format import Format, Scheme
 from flask import Flask, request
 from flask_babel import Babel, gettext
-from model import carnot
+try: # when running as an independent app
+    from model import carnot
+except: # when running in a multipage dashboard
+    from .model import carnot
+try: # when running as an independent app
+    from utilities import _id, common_setup
+except: # when running in a multipage dashboard
+    from .utilities import _id, common_setup
+    
 
 # define translator function
 _ = gettext
@@ -56,7 +64,8 @@ def update_table(row_names, columns, row_data):
 #######################################
 # set up general layout and callbacks #
 #######################################
-
+header, setup_language_general, show_info = common_setup(title, subtitle, info)
+"""
 def header():
     title_html = html.H1(_(title), id='title')
     subtitle_html = html.P(_(subtitle), id='subtitle')
@@ -93,7 +102,7 @@ def show_info(n_clicks):
         text = '   '
         button_text = _('more info')
     return button_text, text
-
+"""
 
 ##########################
 # set up specific layout #
@@ -102,20 +111,20 @@ def show_info(n_clicks):
 T_range = (5, 1000)
 V_range = (0.1, 10)
 
-Tc_input = dbc.Container([dbc.Label(_('T cold /K'), id='Tc-label'),
-                          dbc.Input(id='Tc-input', type='number',
+Tc_input = dbc.Container([dbc.Label(_('T cold /K'), id=_id('Tc-label')),
+                          dbc.Input(id=_id('Tc-input'), type='number',
                                     min=T_range[0], max=T_range[1], step=1, value=250)],
                         fluid=True)
-Th_input = dbc.Container([dbc.Label(_('T hot /K'), id='Th-label'),
-                          dbc.Input(id='Th-input', type='number',
+Th_input = dbc.Container([dbc.Label(_('T hot /K'), id=_id('Th-label')),
+                          dbc.Input(id=_id('Th-input'), type='number',
                                     min=T_range[0], max=T_range[1], step=1, value=300)],
                         fluid=True)
-V1_input = dbc.Container([dbc.Label(_('V\u2081 /\u33A5'), id='V1-label'),
-                          dbc.Input(id='V1-input', type='number',
+V1_input = dbc.Container([dbc.Label(_('V\u2081 /\u33A5'), id=_id('V1-label')),
+                          dbc.Input(id=_id('V1-input'), type='number',
                                     min=V_range[0], max=V_range[1], step=0.1, value=1.0)],
                         fluid=True)
-V2_input = dbc.Container([dbc.Label(_('V\u2082 /\u33A5'), id='V2-label'),
-                          dbc.Input(id='V2-input', type='number',
+V2_input = dbc.Container([dbc.Label(_('V\u2082 /\u33A5'), id=_id('V2-label')),
+                          dbc.Input(id=_id('V2-input'), type='number',
                                     min=V_range[0], max=V_range[1], step=0.1, value=2.0)],
                         fluid=True)
 
@@ -125,20 +134,20 @@ control_panel = dbc.Container([dbc.Row([dbc.Col(Tc_input), dbc.Col(Th_input)]),
 control_panel = dbc.Container([dbc.Row([dbc.Col(Tc_input), dbc.Col(Th_input), dbc.Col(V1_input), dbc.Col(V2_input)])], fluid=True)
 
 
-eta_output = html.H3(_('\u03B7 = --'), id='eta-output')
-w_tot_output = html.H3(_('w = --'), id='w-tot-output')
+eta_output = html.H3(_('\u03B7 = --'), id=_id('eta-output'))
+w_tot_output = html.H3(_('w = --'), id=_id('w-tot-output'))
 
 out_panel = dbc.Row([dbc.Col(eta_output), dbc.Col(w_tot_output)])
 
-plot = dcc.Graph(id='PV-plot', style={'height':'70vh'})
+plot = dcc.Graph(id=_id('PV-plot'), style={'height':'70vh'})
 
 # states
-s_table = dash_table.DataTable(id = 's-table',
+s_table = dash_table.DataTable(id = _id('s-table'),
                 columns = [
-                        {'name': '', 'id': 'row_name', 'type': 'text'},
-                        {'name': _('V /\u33A5'), 'id': 'V', 'type': 'numeric', 'format': Format(precision=3, scheme=Scheme.fixed)},
-                        {'name': _('p /Pa'), 'id': 'p', 'type': 'numeric', 'format': Format(precision=3, scheme=Scheme.fixed)},
-                        {'name': _('T /K'), 'id': 'T', 'type': 'numeric', 'format': Format(precision=1, scheme=Scheme.fixed)}
+                        {'name': '', 'id': _id('row_name'), 'type': 'text'},
+                        {'name': _('V /\u33A5'), 'id': _id('V'), 'type': 'numeric', 'format': Format(precision=3, scheme=Scheme.fixed)},
+                        {'name': _('p /Pa'), 'id': _id('p'), 'type': 'numeric', 'format': Format(precision=3, scheme=Scheme.fixed)},
+                        {'name': _('T /K'), 'id': _id('T'), 'type': 'numeric', 'format': Format(precision=1, scheme=Scheme.fixed)}
                         ],
                     data = [],
                     editable = False,
@@ -148,13 +157,13 @@ s_table = dash_table.DataTable(id = 's-table',
 
 
 # trajectories 
-t_table = dash_table.DataTable(id = 't-table',
+t_table = dash_table.DataTable(id = _id('t-table'),
                 columns = [
-                        {'name': '', 'id': 'row_name', 'type': 'text'},
-                        {'name': _('w /J'), 'id': 'w', 'type': 'numeric', 'format': Format(precision=3, scheme=Scheme.fixed)},
-                        {'name': _('q /J'), 'id': 'q', 'type': 'numeric', 'format': Format(precision=3, scheme=Scheme.fixed)},
-                        {'name': _('\u2206U /J'), 'id': 'DU', 'type': 'numeric', 'format': Format(precision=3, scheme=Scheme.fixed)},
-                        {'name': _('\u2206S /J'), 'id': 'DS', 'type': 'numeric', 'format': Format(precision=3, scheme=Scheme.fixed)}
+                        {'name': '', 'id': _id('row_name'), 'type': 'text'},
+                        {'name': _('w /J'), 'id': _id('w'), 'type': 'numeric', 'format': Format(precision=3, scheme=Scheme.fixed)},
+                        {'name': _('q /J'), 'id': _id('q'), 'type': 'numeric', 'format': Format(precision=3, scheme=Scheme.fixed)},
+                        {'name': _('\u2206U /J'), 'id': _id('DU'), 'type': 'numeric', 'format': Format(precision=3, scheme=Scheme.fixed)},
+                        {'name': _('\u2206S /J'), 'id': _id('DS'), 'type': 'numeric', 'format': Format(precision=3, scheme=Scheme.fixed)}
                         ],
                     data = [],
                     editable = False,
@@ -173,7 +182,7 @@ def layout():
                                      dbc.Col(right, xl=6)
                                     ])],
                            fluid=True,
-                           id='layout'
+                           id=_id('layout')
                            )
     return layout
 
@@ -184,17 +193,17 @@ def layout():
 
 # this is the most important function
 @callback([
-               Output('PV-plot', 'figure'),
-               Output('t-table', 'data'),
-               Output('s-table', 'data'),
-               Output('eta-output', 'children'),
-               Output('w-tot-output', 'children'),
+               Output(_id('PV-plot'), 'figure'),
+               Output(_id('t-table'), 'data'),
+               Output(_id('s-table'), 'data'),
+               Output(_id('eta-output'), 'children'),
+               Output(_id('w-tot-output'), 'children'),
               ],
               [
-               Input('Tc-input', 'value'),  
-               Input('Th-input', 'value'),  
-               Input('V1-input', 'value'),  
-               Input('V2-input', 'value'),  
+               Input(_id('Tc-input'), 'value'),  
+               Input(_id('Th-input'), 'value'),  
+               Input(_id('V1-input'), 'value'),  
+               Input(_id('V2-input'), 'value'),  
               ]
              )
 def update_plot_table(Tc, Th, V1, V2):
@@ -225,16 +234,16 @@ def update_plot_table(Tc, Th, V1, V2):
     return fig, t_data, s_data, f'\u03B7 = {eta:.3f}', f'w = {w_tot:,.3f} J'
 
 @callback([
-               Output('Tc-label', 'children'),
-               Output('Th-label', 'children'),
-               Output('V1-label', 'children'),
-               Output('V2-label', 'children'),
+               Output(_id('Tc-label'), 'children'),
+               Output(_id('Th-label'), 'children'),
+               Output(_id('V1-label'), 'children'),
+               Output(_id('V2-label'), 'children'),
               ],
               [
-               Input('Tc-label', 'children'),
-               Input('Th-label', 'children'),
-               Input('V1-label', 'children'),
-               Input('V2-label', 'children'),
+               Input(_id('Tc-label'), 'children'),
+               Input(_id('Th-label'), 'children'),
+               Input(_id('V1-label'), 'children'),
+               Input(_id('V2-label'), 'children'),
               ])
 def setup_language_specific(*messages):
     return [_(m) for m in messages]
@@ -258,12 +267,13 @@ if __name__ == '__main__':
     app.layout = layout()
     app.run_server(debug=True, host='0.0.0.0', port=5000)
 else: # use as a page in a dash multipage app
+    translation = __name__.rsplit('.',1)[0].replace('.', '/') + '/translations'
     dash.register_page(
         __name__,
-        path=__name__,
         title=title,
         name=title,
         subtitle=subtitle,
         info=info,
-        order=order
+        order=order,
+        translation=translation
 )

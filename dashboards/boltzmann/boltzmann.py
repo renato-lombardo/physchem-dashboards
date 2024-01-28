@@ -13,8 +13,16 @@ from dash.exceptions import PreventUpdate
 from dash.dash_table.Format import Format, Scheme
 from flask import Flask, request
 from flask_babel import Babel, gettext
-from model import population
 from plotly.subplots import make_subplots
+try: # when running as an independent app
+    from model import population
+except: # when running in a multipage dashboard
+    from .model import population
+try: # when running as an independent app
+    from utilities import _id, common_setup
+except Exception as e: # when running in a multipage dashboard
+    from .utilities import _id, common_setup
+    
 
 # define translator function
 _ = gettext
@@ -51,7 +59,8 @@ n_r = [2, 25] # number of levels range
 #######################################
 # set up general layout and callbacks #
 #######################################
-
+header, setup_language_general, show_info = common_setup(title, subtitle, info)
+"""
 def header():
     title_html = html.H1(_(title), id='title')
     subtitle_html = html.P(_(subtitle), id='subtitle')
@@ -88,7 +97,7 @@ def show_info(n_clicks):
         text = '   '
         button_text = _('more info')
     return button_text, text
-
+"""
 ##########################
 # set up specific layout #
 ##########################
@@ -108,8 +117,8 @@ def panel_factory(uid):
         panel with controls and table on the left and plot on the right
     '''
     left = dbc.Col(controls_factory(uid), xl=4)
-    right = dbc.Col(dcc.Graph(id={'type': 'B-plot', 'uid': uid}), xl=8)
-    panel = dbc.Container(dbc.Row([left, right], align='center'), id={'type': 'panel', 'uid': uid}, fluid=True)
+    right = dbc.Col(dcc.Graph(id={'type': _id('B-plot'), 'uid': uid}), xl=8)
+    panel = dbc.Container(dbc.Row([left, right], align='center'), id={'type': _id('panel'), 'uid': uid}, fluid=True)
     return panel
 
                           
@@ -127,29 +136,29 @@ def controls_factory(uid):
     controls : object
         controls container
     '''   
-    e_max_input = dbc.Row([dbc.Col(dbc.Label(_('Max energy (eV)'), id={'type': 'e-max-label', 'uid': uid})),
-                        dbc.Col(dbc.Input(id={'type': 'e-max-input', 'uid': uid}, type='number',
+    e_max_input = dbc.Row([dbc.Col(dbc.Label(_('Max energy (eV)'), id={'type': _id('e-max-label'), 'uid': uid})),
+                        dbc.Col(dbc.Input(id={'type': _id('e-max-input'), 'uid': uid}, type='number',
                                          min=e_max_r[0], max=e_max_r[1], step=0.01, value=0.1))
                          ])
-    n_input = dbc.Row([dbc.Col(dbc.Label(_('n levels'), id={'type': 'n-label', 'uid': uid})),
-                        dbc.Col(dbc.Input(id={'type': 'n-input', 'uid': uid}, type='number',
+    n_input = dbc.Row([dbc.Col(dbc.Label(_('n levels'), id={'type': _id('n-label'), 'uid': uid})),
+                        dbc.Col(dbc.Input(id={'type': _id('n-input'), 'uid': uid}, type='number',
                                          min=n_r[0], max=n_r[1], value=5))
                         ])
-    t_input = dbc.Row([dbc.Col(dbc.Label(_('temperature (K)'), id={'type': 't-label', 'uid': uid})),
-                        dbc.Col(dbc.Input(id={'type': 't-input', 'uid': uid}, type='number',
+    t_input = dbc.Row([dbc.Col(dbc.Label(_('temperature (K)'), id={'type': _id('t-label'), 'uid': uid})),
+                        dbc.Col(dbc.Input(id={'type': _id('t-input'), 'uid': uid}, type='number',
                                          min=T_r[0], max=T_r[1], value=298))
                         ])
-    delete_button = dbc.Col(dbc.Button(_('delete'), id={'type': 'delete-button', 'uid': uid}), width='auto')
+    delete_button = dbc.Col(dbc.Button(_('delete'), id={'type': _id('delete-button'), 'uid': uid}), width='auto')
     input_row = dbc.Container([
         e_max_input,
         n_input,
         t_input
     ])
     data_table = dash_table.DataTable(
-        id = {'type': 'data-table', 'uid': uid},
+        id = {'type': _id('data-table'), 'uid': uid},
         columns = [
-                {'name': _('energy'), 'id': 'energy', 'type': 'numeric', 'format': Format(precision=2, scheme=Scheme.fixed)},
-                {'name': _('pop fract'), 'id': 'population', 'type': 'numeric', 'format': Format(precision=3, scheme=Scheme.fixed)}
+                {'name': _('energy'), 'id': _id('energy'), 'type': 'numeric', 'format': Format(precision=2, scheme=Scheme.fixed)},
+                {'name': _('pop fract'), 'id': _id('population'), 'type': 'numeric', 'format': Format(precision=3, scheme=Scheme.fixed)}
             ],
         data = [],
         editable = True,
@@ -157,7 +166,7 @@ def controls_factory(uid):
         page_action='none',
         style_table={'height': '300px', 'overflowY': 'auto'}
         )
-    controls = dbc.Container([dbc.Row([delete_button]), input_row, data_table], id={'type': 'card', 'uid': uid})
+    controls = dbc.Container([dbc.Row([delete_button]), input_row, data_table], id={'type': _id('card'), 'uid': uid})
     return controls
 
 
@@ -232,8 +241,8 @@ def update_table(E, pop):
     return data
 
 
-add_button = dbc.Button(_('Add plot'), id='add-button', style={'margin-bottom':5})
-panels_container = dbc.Container([], id='panels-container', fluid=True)
+add_button = dbc.Button(_('Add plot'), id=_id('add-button'), style={'margin-bottom':5})
+panels_container = dbc.Container([], id=_id('panels-container'), fluid=True)
 layout = dbc.Container([
         header(),
         html.Hr(),
@@ -248,16 +257,16 @@ layout = dbc.Container([
 # specific callbacks #
 ######################
 
-@callback([Output('add-button', 'children')],
-          [Input('add-button', 'children')])
+@callback([Output(_id('add-button'), 'children')],
+          [Input(_id('add-button'), 'children')])
 def setup_language_specific(*messages):
     return [_(m) for m in messages]
 
 
-@callback(Output('panels-container', 'children'),
-              [Input('add-button', 'n_clicks'),
-              Input({'type':'delete-button', 'uid': ALL}, 'n_clicks')],
-              State('panels-container', 'children')
+@callback(Output(_id('panels-container'), 'children'),
+              [Input(_id('add-button'), 'n_clicks'),
+              Input({'type':_id('delete-button'), 'uid': ALL}, 'n_clicks')],
+              State(_id('panels-container'), 'children')
              )
 def update_panels_container(add_n_clicks, clear_n_clicks, panels_container_list):
     '''update container adding or removing controls as required'''
@@ -278,13 +287,13 @@ def update_panels_container(add_n_clicks, clear_n_clicks, panels_container_list)
 
 # this is the most important function
 @callback([
-               Output({'type': 'B-plot', 'uid': MATCH}, 'figure'),
-               Output({'type': 'data-table', 'uid': MATCH}, 'data')
+               Output({'type': _id('B-plot'), 'uid': MATCH}, 'figure'),
+               Output({'type': _id('data-table'), 'uid': MATCH}, 'data')
               ],
               [
-               Input({'type': 'e-max-input', 'uid': MATCH}, 'value'),
-               Input({'type': 'n-input', 'uid': MATCH}, 'value'),
-               Input({'type': 't-input', 'uid': MATCH}, 'value')
+               Input({'type': _id('e-max-input'), 'uid': MATCH}, 'value'),
+               Input({'type': _id('n-input'), 'uid': MATCH}, 'value'),
+               Input({'type': _id('t-input'), 'uid': MATCH}, 'value')
               ]
              )
 def update_plot_table(e_max, n, T):
@@ -323,13 +332,14 @@ if __name__ == '__main__': # use as a standalone dash app
     app.layout = layout
     app.run_server(debug=True, host='0.0.0.0', port=5000)
 else: # use as a page in a dash multipage app
+    translation = __name__.rsplit('.',1)[0].replace('.', '/') + '/translations'
     dash.register_page(
         __name__,
-        path=__name__,
         title=title,
         name=title,
         subtitle=subtitle,
         info=info,
-        order=order
+        order=order,
+        translation=translation
 )
 

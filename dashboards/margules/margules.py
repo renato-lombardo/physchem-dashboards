@@ -10,7 +10,15 @@ from dash.dependencies import Input, Output, State, MATCH, ALL
 from dash.exceptions import PreventUpdate
 from flask import Flask, request
 from flask_babel import Babel, gettext
-from model import DG_mix, DS_mix, DH_mix, R
+try: # when running as an independent app
+    from model import DG_mix, DS_mix, DH_mix, R
+except: # when running in a multipage dashboard
+    from .model import DG_mix, DS_mix, DH_mix, R
+try: # when running as an independent app
+    from utilities import _id, common_setup
+except Exception as e: # when running in a multipage dashboard
+    from .utilities import _id, common_setup
+    
 
 # define translator function
 _ = gettext
@@ -43,7 +51,8 @@ order = 4
 #######################################
 # set up general layout and callbacks #
 #######################################
-
+header, setup_language_general, show_info = common_setup(title, subtitle, info)
+"""
 def header():
     title_html = html.H1(_(title), id='title')
     subtitle_html = html.P(_(subtitle), id='subtitle')
@@ -80,7 +89,7 @@ def show_info(n_clicks):
         text = '   '
         button_text = _('more info')
     return button_text, text
-
+"""
 
 ##########################
 # set up specific layout #
@@ -107,7 +116,7 @@ def controls_factory(uid):
         dbc.Col(dbc.Input(value=0,
                   step = 0.1,
                   type='number',
-                  id={'type': 'beta-input', 'uid': uid}
+                  id={'type': _id('beta-input'), 'uid': uid}
                  ))]
     )
     
@@ -117,46 +126,46 @@ def controls_factory(uid):
                   min = 5,
                   step = 1,
                   type='number',
-                  id={'type': 't-input', 'uid': uid}
+                  id={'type': _id('t-input'), 'uid': uid}
                   ))]
     )
     
     inputs = dbc.Container([beta_input, t_input], fluid=True)
     
-    DG_switch = daq.BooleanSwitch(id={'type':'DG-switch', 'uid':uid},
+    DG_switch = daq.BooleanSwitch(id={'type':_id('DG-switch'), 'uid':uid},
                                                    on=True,
                                                    label= '\u0394G',
                                                    labelPosition='right')
     
-    DS_switch = daq.BooleanSwitch(id={'type':'DS-switch', 'uid':uid},
+    DS_switch = daq.BooleanSwitch(id={'type':_id('DS-switch'), 'uid':uid},
                                                    on=False,
                                                    label='T\u0394S',
                                                    labelPosition='right')
     
-    DH_switch = daq.BooleanSwitch(id={'type':'DH-switch', 'uid':uid},
+    DH_switch = daq.BooleanSwitch(id={'type':_id('DH-switch'), 'uid':uid},
                                                    on=False,
                                                    label='\u0394H',
                                                    labelPosition='right')
     
-    minima_switch = daq.BooleanSwitch(id={'type':'minima-switch', 'uid':uid},
+    minima_switch = daq.BooleanSwitch(id={'type':_id('minima-switch'), 'uid':uid},
                                                    on=True,
                                                    label=_('Minima'),
                                                    labelPosition='right')
     
     switches = dbc.Container([DG_switch, DS_switch, DH_switch, minima_switch], fluid=True)
     
-    x1_min = dbc.Label('\u03C7\u2081 min = --', id=dict(type='x1-min', uid=uid))
-    x1_max = dbc.Label('\u03C7\u2081 max = --', id=dict(type='x1-max', uid=uid))
-    delete_button = dbc.Col(dbc.Button(_('delete'), id={'type': 'delete-button', 'uid': uid}), width='auto')
+    x1_min = dbc.Label('\u03C7\u2081 min = --', id=dict(type=_id('x1-min'), uid=uid))
+    x1_max = dbc.Label('\u03C7\u2081 max = --', id=dict(type=_id('x1-max'), uid=uid))
+    delete_button = dbc.Col(dbc.Button(_('delete'), id={'type': _id('delete-button'), 'uid': uid}), width='auto')
     bottom = dbc.Row([dbc.Col(delete_button, width=4), dbc.Col(x1_min, width=4), dbc.Col(x1_max, width=4)], justify='center')
     controls = dbc.Card([dbc.Row([dbc.Col(inputs, width=8), dbc.Col(switches)]),html.Hr(), bottom],
-                            id={'type': 'controls-card', 'uid': uid}, style={'margin-bottom':5})
+                            id={'type': _id('controls-card'), 'uid': uid}, style={'margin-bottom':5})
     return controls
 
 
-add_button = dbc.Button(_('Add plot'), id='add-button', style={'margin-bottom':5})
-controls_container = dbc.Container([], id='controls-container', fluid=True)
-plot = dcc.Graph(id='plot', style={'height': '80vh'})
+add_button = dbc.Button(_('Add plot'), id=_id('add-button'), style={'margin-bottom':5})
+controls_container = dbc.Container([], id=_id('controls-container'), fluid=True)
+plot = dcc.Graph(id=_id('plot'), style={'height': '80vh'})
 
 # Layout of the app with all the widgets
 def layout():
@@ -170,7 +179,7 @@ def layout():
         ])
     ],
     fluid=True,
-    id='layout'
+    id=_id('layout')
     )
     return layout
 
@@ -179,15 +188,15 @@ def layout():
 # specific callbacks #
 ######################
 
-@callback([Output('add-button', 'children')],
-          [Input('add-button', 'children')])
+@callback([Output(_id('add-button'), 'children')],
+          [Input(_id('add-button'), 'children')])
 def setup_language_specific(*messages):
     return [_(m) for m in messages]
     
-@callback(Output('controls-container', 'children'),
-              [Input('add-button', 'n_clicks'),
-               Input({'type':'delete-button', 'uid': ALL}, 'n_clicks')],
-              State('controls-container', 'children')
+@callback(Output(_id('controls-container'), 'children'),
+              [Input(_id('add-button'), 'n_clicks'),
+               Input({'type':_id('delete-button'), 'uid': ALL}, 'n_clicks')],
+              State(_id('controls-container'), 'children')
              )
 def update_controls_container(add_n_clicks, clear_n_clicks, controls_container_list):
     '''update container adding or removing controls as required'''
@@ -207,17 +216,17 @@ def update_controls_container(add_n_clicks, clear_n_clicks, controls_container_l
             
 
 # this is the most important function
-@callback([Output('plot', 'figure'),
-               Output({'type':'controls-card', 'uid': ALL}, 'style'),
-               Output({'type':'x1-min', 'uid': ALL}, 'children'),
-               Output({'type':'x1-max', 'uid': ALL}, 'children')],
-              [Input({'type':'beta-input', 'uid': ALL}, 'value'),
-               Input({'type':'t-input', 'uid': ALL}, 'value'),
-               Input({'type':'DG-switch', 'uid': ALL}, 'on'),
-               Input({'type':'DS-switch', 'uid': ALL}, 'on'),
-               Input({'type':'DH-switch', 'uid': ALL}, 'on'),
-               Input({'type':'minima-switch', 'uid': ALL}, 'on')],
-               [State({'type':'controls-card', 'uid': ALL}, 'style')]
+@callback([Output(_id('plot'), 'figure'),
+               Output({'type':_id('controls-card'), 'uid': ALL}, 'style'),
+               Output({'type':_id('x1-min'), 'uid': ALL}, 'children'),
+               Output({'type':_id('x1-max'), 'uid': ALL}, 'children')],
+              [Input({'type':_id('beta-input'), 'uid': ALL}, 'value'),
+               Input({'type':_id('t-input'), 'uid': ALL}, 'value'),
+               Input({'type':_id('DG-switch'), 'uid': ALL}, 'on'),
+               Input({'type':_id('DS-switch'), 'uid': ALL}, 'on'),
+               Input({'type':_id('DH-switch'), 'uid': ALL}, 'on'),
+               Input({'type':_id('minima-switch'), 'uid': ALL}, 'on')],
+               [State({'type':_id('controls-card'), 'uid': ALL}, 'style')]
              )
 def update_plot(beta_list, T_list, DG_list, DS_list, DH_list, minima_list, styles):
     data = []
@@ -279,12 +288,14 @@ if __name__ == '__main__':
     app.layout = layout()
     app.run_server(debug=True, host='0.0.0.0', port=5000)
 else: # use as a page in a dash multipage app
+    translation = __name__.rsplit('.',1)[0].replace('.', '/') + '/translations'
     dash.register_page(
         __name__,
-        path=__name__,
         title=title,
         name=title,
         subtitle=subtitle,
         info=info,
-        order=order
+        order=order,
+        translation=translation
+        
 )

@@ -60,7 +60,7 @@ msgstr ""
 "la differenza di popolazione fra le scatole, divisa il numero totale di "
 "particelle nel sistema:  \n"
 "   \n"
-"   $fluct = \\frac{N_A- N_B}{N}$$\n"
+"   $$fluct = \\frac{N_A- N_B}{N}$$\n"
 "   \n"
 "   "
 

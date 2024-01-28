@@ -7,7 +7,15 @@ from dash.dependencies import Input, Output, State
 from flask import Flask, request
 from flask_babel import Babel, gettext
 from plotly.subplots import make_subplots
-from model import Ehrenfest
+try: # when running as an independent app
+    from model import Ehrenfest
+except: # when running in a multipage dashboard
+    from .model import Ehrenfest
+try: # when running as an independent app
+    from utilities import _id, common_setup
+except Exception as e: # when running in a multipage dashboard
+    from .utilities import _id, common_setup
+    
 
 # define translator function
 _ = gettext
@@ -30,7 +38,8 @@ order = 5
 #######################################
 # set up general layout and callbacks #
 #######################################
-
+header, setup_language_general, show_info = common_setup(title, subtitle, info)
+"""
 def header():
     title_html = html.H1(_(title), id='title')
     subtitle_html = html.P(_(subtitle), id='subtitle')
@@ -67,28 +76,28 @@ def show_info(n_clicks):
         text = '   '
         button_text = _('more info')
     return button_text, text
-
+"""
 
 ##########################
 # set up specific layout #
 ##########################
 
-steps_input = dbc.Row([dbc.Col(dbc.Label(_('steps'), id='steps-label'), md=2),
-                       dbc.Col(dbc.Input(id = 'steps-input', type='number',
+steps_input = dbc.Row([dbc.Col(dbc.Label(_('steps'), id=_id('steps-label')), md=2),
+                       dbc.Col(dbc.Input(id = _id('steps-input'), type='number',
                                      min=10, max=1000, value=200))
                       ])
 
-nA_input = dbc.Row([dbc.Col(dcc.Markdown('$N_A$', id='nA-label', mathjax=True), md=2),
-                    dbc.Col(dbc.Input(id = 'nA-input', type='number',
+nA_input = dbc.Row([dbc.Col(dcc.Markdown('$N_A$', id=_id('nA-label'), mathjax=True), md=2),
+                    dbc.Col(dbc.Input(id = _id('nA-input'), type='number',
                                      min=0, max=50, value=10))
                     ])
 
-nB_input = dbc.Row([dbc.Col(dcc.Markdown('$N_B$', id='nB-label', mathjax=True), md=2),
-                    dbc.Col(dbc.Input(id = 'nB-input', type='number',
+nB_input = dbc.Row([dbc.Col(dcc.Markdown('$N_B$', id=_id('nB-label'), mathjax=True), md=2),
+                    dbc.Col(dbc.Input(id = _id('nB-input'), type='number',
                                      min=0, max=50, value=10))
                     ])
 
-generate_button = dbc.Button(_('generate'), id='generate-button', style={'margin-bottom':5})
+generate_button = dbc.Button(_('generate'), id=_id('generate-button'), style={'margin-bottom':5})
 
 commands = dbc.Container([dbc.Row([dbc.Col(nA_input),]),
                           dbc.Row([dbc.Col(nB_input),]),
@@ -96,7 +105,7 @@ commands = dbc.Container([dbc.Row([dbc.Col(nA_input),]),
                           dbc.Row([dbc.Col(generate_button),])
                          ])
 
-graph = dcc.Graph(id='plot', config= {'displayModeBar': False})
+graph = dcc.Graph(id=_id('plot'), config= {'displayModeBar': False})
 
 def layout():
     layout = dbc.Container([
@@ -106,7 +115,7 @@ def layout():
              align="center",)
     ],
     fluid=True,
-    id ='layout'
+    id =_id('layout')
     )
     return layout
 
@@ -114,24 +123,24 @@ def layout():
 # specific callbacks #
 ######################
 
-@callback([Output('steps-label', 'children'),
-               Output('generate-button', 'children'),
-               Output('nA-label', 'children'),
-               Output('nB-label', 'children'),
+@callback([Output(_id('steps-label'), 'children'),
+               Output(_id('generate-button'), 'children'),
+               Output(_id('nA-label'), 'children'),
+               Output(_id('nB-label'), 'children'),
               ],
-              [Input('steps-label', 'children'),
-               Input('generate-button', 'children'),
-               Input('nA-label', 'children'),
-               Input('nB-label', 'children'),
+              [Input(_id('steps-label'), 'children'),
+               Input(_id('generate-button'), 'children'),
+               Input(_id('nA-label'), 'children'),
+               Input(_id('nB-label'), 'children'),
               ])
 def setup_language_specific(*messages):
     return [_(m) for m in messages]
 
-@callback(Output('plot', 'figure'),
-              [Input('generate-button', 'n_clicks')],
-              [State('nA-input', 'value'),
-               State('nB-input', 'value'),
-               State('steps-input', 'value')]
+@callback(Output(_id('plot'), 'figure'),
+              [Input(_id('generate-button'), 'n_clicks')],
+              [State(_id('nA-input'), 'value'),
+               State(_id('nB-input'), 'value'),
+               State(_id('steps-input'), 'value')]
              )
 def generate_animation(n_clicks, nA, nB, nsteps):
     '''
@@ -249,12 +258,13 @@ if __name__ == '__main__':
     app.layout = layout()
     app.run_server(debug=True, host='0.0.0.0', port=5000)
 else: # use as a page in a dash multipage app
+    translation = __name__.rsplit('.',1)[0].replace('.', '/') + '/translations'
     dash.register_page(
         __name__,
-        path=__name__,
         title=title,
         name=title,
         subtitle=subtitle,
         info=info,
-        order=order
+        order=order,
+        translation=translation
 )
