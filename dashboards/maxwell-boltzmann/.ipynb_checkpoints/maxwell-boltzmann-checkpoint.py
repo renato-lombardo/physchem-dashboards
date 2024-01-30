@@ -11,10 +11,27 @@ from dash.dependencies import Input, Output, State, MATCH, ALL
 from dash.exceptions import PreventUpdate
 from flask import Flask, request
 from flask_babel import Babel, gettext
-from model import MB, v_p, v_avg, v_rms, molecules
+try: # when running as an independent app
+    from model import MB, v_p, v_avg, v_rms, molecules
+except: # when running in a multipage dashboard
+    from .model import MB, v_p, v_avg, v_rms, molecules
 
+try: # when running as an independent app
+    from utilities import _id, common_setup
+except Exception as e: # when running in a multipage dashboard
+    from .utilities import _id, common_setup
+    
 # define translator function to use with flask_babel
 _ = gettext
+
+"""
+def _id(string):
+    '''add unique string to each id, in order to avoid collision with other elemets of the global dashboard'''
+    if __name__ == '__main__':
+        return string
+    name = __name__.split('.')[-1]
+    return name+'-'+string
+"""
 
 #########################
 # Dashboard information #
@@ -53,38 +70,39 @@ for mol in molecules:
         symbol = mol
         molecules[mol]['label'] = html.Span([symbol])
         molecules[mol]['label2'] = f'{symbol}'
-
-
+        
 #######################################
 # set up general layout and callbacks #
 #######################################
+header, setup_language_general, show_info = common_setup(title, subtitle, info)
+
+"""
 
 def header():
-    title_html = html.H1(_(title), id='title')
-    subtitle_html = html.P(_(subtitle), id='subtitle')
-    info_button = dbc.Button(id='info-button', n_clicks=0, children='more info')
+    title_html = html.H1(_(title), id=_id('title'))
+    subtitle_html = html.P(_(subtitle), id=_id('subtitle'))
+    info_button = dbc.Button(id=_id('info-button'), n_clicks=0, children='more info')
     # a text area that support mathjax and Latex for equations
-    info_text = dcc.Markdown('   ', mathjax=True, id='info-text')
+    info_text = dcc.Markdown('   ', mathjax=True, id=_id('info-text'))
     # put button and text area togheter
     title_col = dbc.Col(dbc.Container([title_html, subtitle_html]), width='auto')
     info_col = dbc.Col(dbc.Container([info_text, info_button]), width='auto')
     #header = dbc.Row([title_col, info_col])
     return dbc.Row([title_col, info_col])
 
-
-@callback([Output('title', 'children'),
-           Output('subtitle', 'children')
+@callback([Output(_id('title'), 'children'),
+           Output(_id('subtitle'), 'children')
            ],
-          [Input('title', 'children'),
-           Input('subtitle', 'children')
+          [Input(_id('title'), 'children'),
+           Input(_id('subtitle'), 'children')
           ])
 def setup_language_general(*messages):
     return [_(m) for m in messages]
 
 
-@callback([Output('info-button', 'children'),
-               Output('info-text', 'children')],
-              Input('info-button', 'n_clicks')
+@callback([Output(_id('info-button'), 'children'),
+               Output(_id('info-text'), 'children')],
+              Input(_id('info-button'), 'n_clicks')
              )
 def show_info(n_clicks):
     '''show a short information about the model '''
@@ -95,8 +113,7 @@ def show_info(n_clicks):
         text = '   '
         button_text = _('more info')
     return button_text, text
-
-
+"""
 ##########################
 # set up specific layout #
 ##########################
@@ -104,12 +121,12 @@ def show_info(n_clicks):
 def controls_card_factory(uid=None):
     '''generate a card with all the controls for each curve added'''
     
-    molecule_dropdown = dcc.Dropdown(id={'type':'molecule-dropdown', 'uid': uid},
+    molecule_dropdown = dcc.Dropdown(id={'type':_id('molecule-dropdown'), 'uid': uid},
                                      options=[{'label': molecules[m]['label'], 'value': m} for m in molecules],
                                      value='O_2')
 
-    temperature_slider = dbc.Container([dbc.Label(_("temperature not set"), id={'type':'temperature-output','uid':uid}),
-                                    dcc.Slider(id = {'type':'temperature-slider', 'uid':uid},
+    temperature_slider = dbc.Container([dbc.Label(_("temperature not set"), id={'type':_id('temperature-output'),'uid':uid}),
+                                    dcc.Slider(id = {'type':_id('temperature-slider'), 'uid':uid},
                                                min=200, max=1000, step=10,
                                                tooltip={"placement": "bottom", "always_visible": False},
                                                marks={200: '200 K',
@@ -120,14 +137,14 @@ def controls_card_factory(uid=None):
                                                value=300)])
     
     speed_checklist = dbc.Checklist(options=[{'label': v_value['label'], 'value': v_key} for v_key, v_value in v_dict.items()],
-                                   value=[], id={'type':'speed-checklist', 'uid':uid})
+                                   value=[], id={'type':_id('speed-checklist'), 'uid':uid})
     
 
-    area_slider = dbc.Container([daq.BooleanSwitch(id={'type':'area-switch', 'uid':uid},
+    area_slider = dbc.Container([daq.BooleanSwitch(id={'type':_id('area-switch'), 'uid':uid},
                                                    on=False,
                                                    label=_('Probability'),
                                                    labelPosition='left'),
-                                dcc.RangeSlider(id = {'type':'area-slider', 'uid':uid},
+                                dcc.RangeSlider(id = {'type':_id('area-slider'), 'uid':uid},
                                            min=0, max=6000, step=50,
                                            tooltip={"placement": "bottom", "always_visible": False},
                                            marks={0: '0 m/s',
@@ -136,7 +153,7 @@ def controls_card_factory(uid=None):
                                                   6000: '6000 m/s'},
                                            value=[0, 6000], disabled=True)
                             ],)
-    clear_button = dbc.Button(_('Delete'), id={'type':'clear-button', 'uid':uid})    
+    clear_button = dbc.Button(_('Delete'), id={'type':_id('clear-button'), 'uid':uid})    
     
     # assemble the card
     controls_card = dbc.Card([ # a card
@@ -147,27 +164,27 @@ def controls_card_factory(uid=None):
         ]),
         temperature_slider,
         area_slider
-    ], body=True, id={'type':'controls_card', 'uid':uid}, style={'margin-bottom':5})
+    ], body=True, id={'type':_id('controls_card'), 'uid':uid}, style={'margin-bottom':5})
     return controls_card
 
 def layout():
     # put all the cards together
-    curves_container = dbc.Container([], id='curves-container')
+    curves_container = dbc.Container([], id=_id('curves-container'))
     # button to add a new plot
-    add_button = dbc.Button(_('Add plot'), id='add-button', style={'margin-bottom':5})
+    add_button = dbc.Button(_('Add plot'), id=_id('add-button'), style={'margin-bottom':5})
     #left panel containing all the plots and the button
-    left_panel = dbc.Container([add_button, curves_container], id='left-panel')
+    left_panel = dbc.Container([add_button, curves_container], id=_id('left-panel'))
 
     # specific layout of the app with all the widgets
     layout = dbc.Container([
         header(),
         html.Hr(),
         dbc.Row([dbc.Col(left_panel, xl=3),
-            dbc.Col(dcc.Graph(id="MB-plot", style={'height':'80vh'}), xl=7),],
+            dbc.Col(dcc.Graph(id=_id("MB-plot"), style={'height':'80vh'}), xl=7),],
                  align="center",),
     ],
     fluid=True,
-    id='layout'
+    id=_id('layout')
     )
     return layout
 
@@ -175,21 +192,21 @@ def layout():
 # specific callbacks #
 ######################
 
-@callback([Output('add-button', 'children')],
-          [Input('add-button', 'children')])
+@callback([Output(_id('add-button'), 'children')],
+          [Input(_id('add-button'), 'children')])
 def setup_language_specific(*messages):
     return [_(m) for m in messages]
     
-@callback(Output('curves-container', 'children'),
-              [Input('add-button', 'n_clicks'),
-              Input({'type':'clear-button', 'uid': ALL}, 'n_clicks')],
-              State('curves-container', 'children'),
+@callback(Output(_id('curves-container'), 'children'),
+              [Input(_id('add-button'), 'n_clicks'),
+              Input({'type':_id('clear-button'), 'uid': ALL}, 'n_clicks')],
+              State(_id('curves-container'), 'children'),
         )
 def update_curves_container(add_n_clicks, clear_n_clicks, curves_container_list):
     '''update curves-container adding or removing controls as required'''
     ctx = dash.callback_context # this is needed to know which button has been pushed
     trigger = ctx.triggered[0]
-    if 'add-button' in trigger['prop_id']: # add a new controls_card
+    if _id('add-button') in trigger['prop_id']: # add a new controls_card
         uid = add_n_clicks # generate a unique id for each curve
         new_controls_card = controls_card_factory(uid=uid)
         return curves_container_list+[new_controls_card]
@@ -205,31 +222,31 @@ def update_curves_container(add_n_clicks, clear_n_clicks, curves_container_list)
         else:
             raise PreventUpdate # needed when app starts for the first time
         
-@callback(Output({'type':'temperature-output', 'uid': MATCH}, 'children'),
-              Input({'type':'temperature-slider', 'uid': MATCH}, 'value'))
+@callback(Output({'type':_id('temperature-output'), 'uid': MATCH}, 'children'),
+              Input({'type':_id('temperature-slider'), 'uid': MATCH}, 'value'))
 def display_temperature_value(value):
     return _('temperature') + f' {value} K'
 
 
-@callback(Output({'type':'area-slider', 'uid': MATCH}, 'disabled'),
-              Input({'type':'area-switch', 'uid': MATCH}, 'on'))
+@callback(Output({'type':_id('area-slider'), 'uid': MATCH}, 'disabled'),
+              Input({'type':_id('area-switch'), 'uid': MATCH}, 'on'))
 def activate_area_slider(on):
     return not on
 
 # This is the most important callback doing nearly all the work
-@callback([Output("MB-plot", "figure"),
-               Output({'type':'controls_card', 'uid': ALL}, 'style'),
-               Output({'type':'area-switch', 'uid': ALL}, 'label'),
-               Output({'type':'speed-checklist', 'uid': ALL}, 'options')
+@callback([Output(_id('MB-plot'), 'figure'),
+               Output({'type':_id('controls_card'), 'uid': ALL}, 'style'),
+               Output({'type':_id('area-switch'), 'uid': ALL}, 'label'),
+               Output({'type':_id('speed-checklist'), 'uid': ALL}, 'options')
               ],
-              [Input({'type':'molecule-dropdown', 'uid': ALL}, 'value'),
-               Input({'type':'temperature-slider', 'uid': ALL}, 'value'),
-               Input({'type':'area-switch', 'uid': ALL}, 'on'),
-               Input({'type':'area-slider', 'uid': ALL}, 'value'),
-               Input({'type':'speed-checklist', 'uid': ALL}, 'value')
+              [Input({'type':_id('molecule-dropdown'), 'uid': ALL}, 'value'),
+               Input({'type':_id('temperature-slider'), 'uid': ALL}, 'value'),
+               Input({'type':_id('area-switch'), 'uid': ALL}, 'on'),
+               Input({'type':_id('area-slider'), 'uid': ALL}, 'value'),
+               Input({'type':_id('speed-checklist'), 'uid': ALL}, 'value')
               ],
-              State({'type':'controls_card', 'uid': ALL}, 'style'),
-              State({'type':'speed-checklist', 'uid': ALL}, 'options')
+              State({'type':_id('controls_card'), 'uid': ALL}, 'style'),
+              State({'type':_id('speed-checklist'), 'uid': ALL}, 'options')
 )
 def update_plot(mols, T_vals, a_switch, v_range, v_selected, style, options):
     '''update plots and values on the relative panel everytime something changes'''
@@ -296,6 +313,8 @@ def update_plot(mols, T_vals, a_switch, v_range, v_selected, style, options):
         xanchor="right",
         x=1)
         )
+    
+    #print(go.Figure(data=data, layout=layout), new_style, new_label, new_options)
     return go.Figure(data=data, layout=layout), new_style, new_label, new_options
 
 if __name__ == '__main__': # use as a standalone dash app
@@ -316,12 +335,14 @@ if __name__ == '__main__': # use as a standalone dash app
     app.layout = layout()
     app.run_server(debug=True, host='0.0.0.0', port=5000)
 else: # use as a page in a dash multipage app
+    translation = __name__.rsplit('.',1)[0].replace('.', '/') + '/translations'
     dash.register_page(
         __name__,
-        path=__name__,
+        path = '/'+__name__.split('.')[-1],
         title=title,
         name=title,
         subtitle=subtitle,
         info=info,
-        order=order
-)
+        order=order,
+        translation=translation
+    )

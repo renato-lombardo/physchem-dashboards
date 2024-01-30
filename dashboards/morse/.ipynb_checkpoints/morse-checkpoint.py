@@ -12,8 +12,15 @@ from dash.dependencies import Input, Output, State, MATCH, ALL
 from dash.exceptions import PreventUpdate
 from flask import Flask, request
 from flask_babel import Babel, gettext
-from model import oscillator, molecules
-
+try: # when running as an independent app
+    from model import oscillator, molecules
+except: # when running in a multipage dashboard
+    from .model import oscillator, molecules
+try: # when running as an independent app
+    from utilities import _id, common_setup
+except Exception as e: # when running in a multipage dashboard
+    from .utilities import _id, common_setup
+    
 # define translator function
 _ = gettext
 
@@ -36,7 +43,6 @@ info = _(r'''
         In this model there is a **dissociation limit**, an energy at which the bond breaks. $D_e$ is the **potential well**, the deeper the well, the higher the bond energy (i.e. the work needed to break the bond).
         ''')
 order = 2
-
 ##################################
 # common variables and utilities #
 ##################################
@@ -55,17 +61,17 @@ for mol in molecules:
         symbol = mol
         molecules[mol]['label'] = html.Span([symbol])
         molecules[mol]['label2'] = f'{symbol}'
-
 #######################################
 # set up general layout and callbacks #
 #######################################
-
+header, setup_language_general, show_info = common_setup(title, subtitle, info)
+"""
 def header():
-    title_html = html.H1(_(title), id='title')
-    subtitle_html = html.P(_(subtitle), id='subtitle')
-    info_button = dbc.Button(id='info-button', n_clicks=0, children='more info')
+    title_html = html.H1(_(title), id=_id('title'))
+    subtitle_html = html.P(_(subtitle), id=_id('subtitle'))
+    info_button = dbc.Button(id=_id('info-button'), n_clicks=0, children='more info')
     # a text area that support mathjax and Latex for equations
-    info_text = dcc.Markdown('   ', mathjax=True, id='info-text')
+    info_text = dcc.Markdown('   ', mathjax=True, id=_id('info-text'))
     # put button and text area togheter
     title_col = dbc.Col(dbc.Container([title_html, subtitle_html]), width='auto')
     info_col = dbc.Col(dbc.Container([info_text, info_button]), width='auto')
@@ -73,19 +79,19 @@ def header():
     return dbc.Row([title_col, info_col])
 
 
-@callback([Output('title', 'children'),
-           Output('subtitle', 'children')
+@callback([Output(_id('title'), 'children'),
+           Output(_id('subtitle'), 'children')
            ],
-          [Input('title', 'children'),
-           Input('subtitle', 'children')
+          [Input(_id('title'), 'children'),
+           Input(_id('subtitle'), 'children')
           ])
 def setup_language_general(*messages):
     return [_(m) for m in messages]
 
 
-@callback([Output('info-button', 'children'),
-               Output('info-text', 'children')],
-              Input('info-button', 'n_clicks')
+@callback([Output(_id('info-button'), 'children'),
+               Output(_id('info-text'), 'children')],
+              Input(_id('info-button'), 'n_clicks')
              )
 def show_info(n_clicks):
     '''show a short information about the model '''
@@ -96,8 +102,7 @@ def show_info(n_clicks):
         text = '   '
         button_text = _('more info')
     return button_text, text
-
-
+"""
 ##########################
 # set up specific layout #
 ##########################
@@ -105,42 +110,42 @@ def show_info(n_clicks):
 def controls_card_factory(uid=None):
     '''generate a card with all the controls for each curve'''
     
-    molecule_dropdown = dcc.Dropdown(id={'type':'molecule-dropdown', 'uid': uid},
+    molecule_dropdown = dcc.Dropdown(id={'type':_id('molecule-dropdown'), 'uid': uid},
                                      options=[{"label": molecules[m]['label'], "value": m} for m in molecules.keys()],
                                      value='Br_2')
     
 
     h_container = dbc.Container([dbc.Row([
-                                 dbc.Col(daq.BooleanSwitch(id={'type':'h-plot-switch', 'uid':uid},
+                                 dbc.Col(daq.BooleanSwitch(id={'type':_id('h-plot-switch'), 'uid':uid},
                                                            on=False,
                                                            label='Hooke',
                                                            labelPosition='left')),
-                                 dbc.Col(daq.BooleanSwitch(id={'type':'h-levels-switch', 'uid':uid},
+                                 dbc.Col(daq.BooleanSwitch(id={'type':_id('h-levels-switch'), 'uid':uid},
                                                            on=False,
                                                            label=_('Levels'),
                                                            labelPosition='left'))])
                                 ]) 
     m_container = dbc.Container([dbc.Row([
-                                 dbc.Col(daq.BooleanSwitch(id={'type':'m-plot-switch', 'uid':uid},
+                                 dbc.Col(daq.BooleanSwitch(id={'type':_id('m-plot-switch'), 'uid':uid},
                                                            on=True,
                                                            label='Morse',
                                                            labelPosition='left')),
-                                 dbc.Col(daq.BooleanSwitch(id={'type':'m-levels-switch', 'uid':uid},
+                                 dbc.Col(daq.BooleanSwitch(id={'type':_id('m-levels-switch'), 'uid':uid},
                                                            on=False,
                                                            label=_('Levels'),
                                                            labelPosition='left'))])
                                 ])
     
-    clear_button = dbc.Button(_('Delete'), id={'type':'clear-button', 'uid':uid})
+    clear_button = dbc.Button(_('Delete'), id={'type':_id('clear-button'), 'uid':uid})
     
     controls_card = dbc.Card([dbc.Row([dbc.Col(molecule_dropdown), dbc.Col(clear_button)]),
                               dbc.Row([dbc.Col(m_container)]),
                               dbc.Row([dbc.Col(h_container)])],
-                             body=True, id={'type':'controls_card', 'uid':uid}, style={'margin-bottom':5})
+                             body=True, id={'type':_id('controls_card'), 'uid':uid}, style={'margin-bottom':5})
     return controls_card
 
-r_slider = dbc.Container([dbc.Label(_('distance'), id='distance-label'),
-                          dcc.Slider(id = 'r-slider',
+r_slider = dbc.Container([dbc.Label(_('distance'), id=_id('distance-label')),
+                          dcc.Slider(id=_id('r-slider'),
                                      min=1, max=10, step=10,
                                      marks={2: '2 \u212B',
                                             4: '4 \u212B',
@@ -149,19 +154,19 @@ r_slider = dbc.Container([dbc.Label(_('distance'), id='distance-label'),
                                             10: '10 \u212B'},
                                      value=6)])
 
-curves_container = dbc.Container([], id='curves-container') # put all the cards together
-add_button = dbc.Button(_('add plot'), id='add-button', style={'margin-bottom':5})
-left_panel = dbc.Container([r_slider, add_button, curves_container], id='left-panel')
+curves_container = dbc.Container([], id=_id('curves-container')) # put all the cards together
+add_button = dbc.Button(_('add plot'), id=_id('add-button'), style={'margin-bottom':5})
+left_panel = dbc.Container([r_slider, add_button, curves_container], id=_id('left-panel'))
 def layout():
     'set layout of the app with all the widgets'
     layout = dbc.Container([
         header(),
         html.Hr(),
         dbc.Row([dbc.Col(left_panel, xl=3),
-                 dbc.Col(dcc.Graph(id="V-plot", style={'height':'80vh'}), xl=7),],
+                 dbc.Col(dcc.Graph(id=_id("V-plot"), style={'height':'80vh'}), xl=7),],
                  align="center",),],                           
         fluid=True,
-        id='layout'
+        id=_id('layout')
         )
     return layout
    
@@ -169,19 +174,19 @@ def layout():
 ######################
 # specific callbacks #
 ######################
-@callback([Output('distance-label', 'children'),
-               Output('add-button', 'children'),
+@callback([Output(_id('distance-label'), 'children'),
+               Output(_id('add-button'), 'children'),
               ],
-              [Input('distance-label', 'children'),
-               Input('add-button', 'children'),
+              [Input(_id('distance-label'), 'children'),
+               Input(_id('add-button'), 'children'),
               ])
 def setup_language_specific(*messages):
     return [_(m) for m in messages]
     
-@callback(Output('curves-container', 'children'),
-              [Input('add-button', 'n_clicks'),
-              Input({'type':'clear-button', 'uid': ALL}, 'n_clicks')],
-              State('curves-container', 'children'),
+@callback(Output(_id('curves-container'), 'children'),
+              [Input(_id('add-button'), 'n_clicks'),
+              Input({'type':_id('clear-button'), 'uid': ALL}, 'n_clicks')],
+              State(_id('curves-container'), 'children'),
         )
 def update_curves_container(add_n_clicks, clear_n_clicks, curves_container_list):
     '''update curves-container adding or removing controls as required'''
@@ -203,18 +208,17 @@ def update_curves_container(add_n_clicks, clear_n_clicks, curves_container_list)
 
             
 # This is the most important callback doing nearly all the work
-@callback([Output('V-plot', 'figure'),
-               Output('V-plot', 'config'),
-               Output({'type':'controls_card', 'uid': ALL}, 'style'),
+@callback([Output(_id('V-plot'), 'figure'),
+               Output({'type':_id('controls_card'), 'uid': ALL}, 'style'),
               ],
-              [Input('r-slider', 'value'),
-               Input({'type':'molecule-dropdown', 'uid': ALL}, 'value'),
-               Input({'type':'m-plot-switch', 'uid': ALL}, 'on'),
-               Input({'type':'m-levels-switch', 'uid': ALL}, 'on'),
-               Input({'type':'h-plot-switch', 'uid': ALL}, 'on'),
-               Input({'type':'h-levels-switch', 'uid': ALL}, 'on'),
+              [Input(_id('r-slider'), 'value'),
+               Input({'type':_id('molecule-dropdown'), 'uid': ALL}, 'value'),
+               Input({'type':_id('m-plot-switch'), 'uid': ALL}, 'on'),
+               Input({'type':_id('m-levels-switch'), 'uid': ALL}, 'on'),
+               Input({'type':_id('h-plot-switch'), 'uid': ALL}, 'on'),
+               Input({'type':_id('h-levels-switch'), 'uid': ALL}, 'on'),
               ],
-              State({'type':'controls_card', 'uid': ALL}, 'style'),
+              State({'type':_id('controls_card'), 'uid': ALL}, 'style'),
 )
 def update_plot(r_max, mols, morse, morse_levels, hooke, hooke_levels, style):
     '''update plots area values on panel everytime something changes'''
@@ -264,18 +268,16 @@ def update_plot(r_max, mols, morse, morse_levels, hooke, hooke_levels, style):
     )
     myfig = go.Figure(data=data, layout=layout)
     myfig.add_hline(y=0, line_dash="dash")
-    config = {'locale':get_locale()}
-    return myfig, config, new_style, 
-
+    return myfig, new_style, 
+    
 if __name__ == '__main__':
     ####################
     # Initilialize app #
     ####################
-    # create the app
-    app = dash.Dash(__name__, external_stylesheets=[dbc.themes.BOOTSTRAP])
-    
     def get_locale():
         return request.accept_languages.best_match(LANGUAGES.keys())
+    # create the app
+    app = dash.Dash(__name__, external_stylesheets=[dbc.themes.BOOTSTRAP])
     
     # intialize Flask-babel
     babel = Babel(app.server) # app.server is the Flask app inside the dash app.
@@ -284,13 +286,16 @@ if __name__ == '__main__':
         babel.init_app(app.server, locale_selector=get_locale)
     app.layout = layout()
     app.run_server(debug=True, host='0.0.0.0', port=5000)
+    
 else: # use as a page in a dash multipage app
+    translation = __name__.rsplit('.',1)[0].replace('.', '/') + '/translations'
     dash.register_page(
         __name__,
-        path=__name__,
+        path = '/'+__name__.split('.')[-1],
         title=title,
         name=title,
         subtitle=subtitle,
         info=info,
-        order=order
-)
+        order=order,
+        translation = translation
+    )

@@ -10,7 +10,15 @@ from dash.dependencies import Input, Output, State, MATCH, ALL
 from dash.exceptions import PreventUpdate
 from flask import Flask, request
 from flask_babel import Babel, gettext
-from model import hill
+try: # when running as an independent app
+    from model import hill
+except: # when running in a multipage dashboard
+    from .model import hill
+try: # when running as an independent app
+    from utilities import _id, common_setup
+except Exception as e: # when running in a multipage dashboard
+    from .utilities import _id, common_setup
+    
 
 # define translator function
 _ = gettext
@@ -45,7 +53,9 @@ colors = px.colors.qualitative.Plotly
 #######################################
 # set up general layout and callbacks #
 #######################################
+header, setup_language_general, show_info = common_setup(title, subtitle, info)
 
+"""
 def header():
     title_html = html.H1(_(title), id='title')
     subtitle_html = html.P(_(subtitle), id='subtitle')
@@ -82,7 +92,7 @@ def show_info(n_clicks):
         text = '   '
         button_text = _('more info')
     return button_text, text
-
+"""
 
 ###########################
 # dash element definition #
@@ -90,8 +100,8 @@ def show_info(n_clicks):
 
 def controls_card_factory(uid=None):
     p50_slider = dbc.Container([html.H5(_('Bohr effect')),
-                                dbc.Label(_("p50 = -- mbar"), id={'type':'p50-output','uid':uid}),
-                                dcc.Slider(id = {'type':'p50-slider', 'uid':uid},
+                                dbc.Label(_("p50 = -- mbar"), id={'type':_id('p50-output'),'uid':uid}),
+                                dcc.Slider(id = {'type':_id('p50-slider'), 'uid':uid},
                                            min=1, max=100, step=1,
                                            marks={20: '20 mbar',
                                                   40: '40 mbar',
@@ -101,8 +111,8 @@ def controls_card_factory(uid=None):
                                            value=35)])
 
     n_slider = dbc.Container([html.H5(_('Root effect')),
-                              dbc.Label(_("n = --"), id={'type':'n-output','uid':uid}),
-                              dcc.Slider(id = {'type':'n-slider', 'uid':uid},
+                              dbc.Label(_("n = --"), id={'type':_id('n-output'),'uid':uid}),
+                              dcc.Slider(id = {'type':_id('n-slider'), 'uid':uid},
                                          min=0.1, max=10, step=0.1,
                                          marks={2: '2',
                                                 4: '4',
@@ -111,18 +121,18 @@ def controls_card_factory(uid=None):
                                                 10: '10'},
                                          value=4)])
 
-    clear_button = dbc.Button(_('Delete'), id={'type':'clear-button', 'uid':uid})    
+    clear_button = dbc.Button(_('Delete'), id={'type':_id('clear-button'), 'uid':uid})    
     
     
     controls_card = dbc.Card([p50_slider, html.Hr(), n_slider, html.Hr(), clear_button ], body=True,
-                             id={'type':'controls-card', 'uid':uid}, style={'margin-bottom':5})
+                             id={'type':_id('controls-card'), 'uid':uid}, style={'margin-bottom':5})
     return controls_card
 
-add_button = dbc.Button(_('Add plot'), id='add-button', style={'margin-bottom':5})
-controls_container = dbc.Container([], id='controls-container', fluid=True)
-plot = dcc.Graph(id='plot', style={'height': '80vh'})
-pO2_slider = dbc.Container([html.H5("pO\u2082 --:-- mbar", id='pO2-output'),
-                            dcc.RangeSlider(id = 'pO2-slider',
+add_button = dbc.Button(_('Add plot'), id=_id('add-button'), style={'margin-bottom':5})
+controls_container = dbc.Container([], id=_id('controls-container'), fluid=True)
+plot = dcc.Graph(id=_id('plot'), style={'height': '80vh'})
+pO2_slider = dbc.Container([html.H5("pO\u2082 --:-- mbar", id=_id('pO2-output')),
+                            dcc.RangeSlider(id = _id('pO2-slider'),
                                             min=0, max=2000, step=50,
                                             marks={500: '500',
                                                    1000: '1000',
@@ -142,7 +152,7 @@ def layout():
         ])
     ],
     fluid=True,
-    id='layout'
+    id=_id('layout')
     )
     return layout
 
@@ -151,10 +161,10 @@ def layout():
 # set up specific layout #
 ##########################
 
-@callback(Output('controls-container', 'children'),
-              [Input('add-button', 'n_clicks'),
-               Input({'type':'clear-button', 'uid': ALL}, 'n_clicks')],
-              State('controls-container', 'children')
+@callback(Output(_id('controls-container'), 'children'),
+              [Input(_id('add-button'), 'n_clicks'),
+               Input({'type':_id('clear-button'), 'uid': ALL}, 'n_clicks')],
+              State(_id('controls-container'), 'children')
              )
 def update_controls_container(add_n_clicks, clear_n_clicks, controls_container_list):
     '''update container adding or removing controls as required'''
@@ -172,32 +182,32 @@ def update_controls_container(add_n_clicks, clear_n_clicks, controls_container_l
         else:
             raise PreventUpdate # needed when app starts         
 
-@callback(Output({'type':'p50-output', 'uid': MATCH}, 'children'),
-              Input({'type':'p50-slider', 'uid': MATCH}, 'value'))
+@callback(Output({'type':_id('p50-output'), 'uid': MATCH}, 'children'),
+              Input({'type':_id('p50-slider'), 'uid': MATCH}, 'value'))
 def update_p50_slider(val):
     return f'p50 = {val} mbar'
 
 
-@callback(Output({'type':'n-output', 'uid': MATCH}, 'children'),
-              Input({'type':'n-slider', 'uid': MATCH}, 'value'))
+@callback(Output({'type':_id('n-output'), 'uid': MATCH}, 'children'),
+              Input({'type':_id('n-slider'), 'uid': MATCH}, 'value'))
 def update_n_slider(val):
     return f'n = {val}'
 
 
-@callback(Output('pO2-output', 'children'),
-              Input('pO2-slider', 'value'))
+@callback(Output(_id('pO2-output'), 'children'),
+              Input(_id('pO2-slider'), 'value'))
 def update_pO2_slider(val):
     return f'pO\u2082 = [{val[0]}-{val[1]}] mbar'
 
             
 # this is the most important function
-@callback([Output('plot', 'figure'),
-               Output({'type':'controls-card', 'uid': ALL}, 'style'),
+@callback([Output(_id('plot'), 'figure'),
+               Output({'type':_id('controls-card'), 'uid': ALL}, 'style'),
               ],
-              [Input({'type':'p50-slider', 'uid': ALL}, 'value'),
-               Input({'type':'n-slider', 'uid': ALL}, 'value'),
-               Input('pO2-slider', 'value')],
-               [State({'type':'controls-card', 'uid': ALL}, 'style')]
+              [Input({'type':_id('p50-slider'), 'uid': ALL}, 'value'),
+               Input({'type':_id('n-slider'), 'uid': ALL}, 'value'),
+               Input(_id('pO2-slider'), 'value')],
+               [State({'type':_id('controls-card'), 'uid': ALL}, 'style')]
              )
 def update_plot(p50_list, n_list, pO2, styles):
     data = []
@@ -214,8 +224,8 @@ def update_plot(p50_list, n_list, pO2, styles):
               'yaxis': {'title': _('saturation'), 'range': (0, 1)}}
     return go.Figure(data=data, layout=layout), new_styles
 
-@callback([Output('add-button', 'children')],
-          [Input('add-button', 'children')])
+@callback([Output(_id('add-button'), 'children')],
+          [Input(_id('add-button'), 'children')])
 def setup_language(*messages):
     return [_(m) for m in messages]
 
@@ -238,12 +248,13 @@ if __name__ == '__main__':
     app.layout = layout()
     app.run_server(debug=True, host='0.0.0.0', port=5000)
 else: # use as a page in a dash multipage app
+    translation = __name__.rsplit('.',1)[0].replace('.', '/') + '/translations'
     dash.register_page(
         __name__,
-        path=__name__,
         title=title,
         name=title,
         subtitle=subtitle,
         info=info,
-        order=order
+        order=order,
+        translation=translation
 )
