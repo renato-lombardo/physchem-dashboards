@@ -22,21 +22,25 @@ def get_pages(blacklist='blacklist.txt'):
     pages = [page for page in dash.page_registry.values() if page['name'] not in blacklisted]
     return pages
 
-app = Dash('chemistry dashboards', use_pages=True,
+dash_app = Dash('chemistry dashboards', use_pages=True,
            pages_folder='dashboards',
            #external_stylesheets=[dbc.themes.BOOTSTRAP],
            suppress_callback_exceptions=True
-          )
+            )
+
+# it is better to have the actual Flask app explicitly named "app" so that it can be run by some hosting services
+
+app = dash_app.server # this is the actual Flask app
 
 pages = get_pages()
 base_dir = os.path.abspath(os.path.dirname(__file__))
 translations = ';'.join([os.path.join(base_dir, p["translation"]) for p in pages])
 # intialize Flask-babel
-babel = Babel(app.server) # app.server is the Flask app inside the dash app.
-app.server.config['BABEL_TRANSLATION_DIRECTORIES'] = translations
-with app.server.app_context():
+babel = Babel(app) # app.server is the Flask app inside the dash app.
+app.config['BABEL_TRANSLATION_DIRECTORIES'] = translations
+with app.app_context():
     LANGUAGES = {l.language: l.get_language_name() for l in babel.list_translations()}
-    babel.init_app(app.server, locale_selector=get_locale)
+    babel.init_app(app, locale_selector=get_locale)
 
 
 nav_list = dbc.Nav(
@@ -51,7 +55,7 @@ nav_list = dbc.Nav(
     pills=True,    
 )
 
-app.layout = html.Div([nav_list,
+dash_app.layout = html.Div([nav_list,
               dash.page_container
              ])
 
@@ -59,6 +63,6 @@ app.layout = html.Div([nav_list,
 
 if __name__ == '__main__':
 #    app.run_server(debug=True, host='0.0.0.0', port=5000)
-    app.run_server(debug=True)
+    app.run(debug=True)
     
     

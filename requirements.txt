@@ -1,8 +1,8 @@
 dash==2.14.1
-dash_bootstrap_components==1.4.1
-dash_daq==0.5.0
+dash-bootstrap-components==1.4.1
+dash-daq==0.5.0
 Flask==2.2.5
-flask_babel==4.0.0
+flask-babel==4.0.0
 numpy==1.25.1
 Pint==0.23
 plotly==5.18.0
