@@ -24,7 +24,7 @@ def get_pages(blacklist='blacklist.txt'):
 
 app = Dash('chemistry dashboards', use_pages=True,
            pages_folder='dashboards',
-           external_stylesheets=[dbc.themes.BOOTSTRAP],
+           #external_stylesheets=[dbc.themes.BOOTSTRAP],
            suppress_callback_exceptions=True
           )
 
