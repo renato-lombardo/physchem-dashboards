@@ -2,9 +2,8 @@ import dash
 import dash_bootstrap_components as dbc
 import dash_daq as daq
 import numpy as np
-import plotly.express as px
+import plotly.colors as pcolors
 import plotly.graph_objs as go
-import plotly.io as pio
 import re
 from dash import callback, dcc, html
 from dash.dependencies import Input, Output, State, MATCH, ALL
@@ -50,7 +49,7 @@ order = 1
 ##################################
 
 # colors for plotting different curves
-colors = px.colors.qualitative.Plotly
+colors = pcolors.qualitative.Plotly
 
 # dictionary with all the characterstics speed information
 # func: funtion used to compute v, label: for dropdown menu, dash: type of dash for plot
