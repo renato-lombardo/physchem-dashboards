@@ -2,7 +2,7 @@ import numpy as np
 import dash
 import dash_bootstrap_components as dbc
 import dash_daq as daq
-import plotly.express as px
+import plotly.colors as pcolors
 import plotly.graph_objs as go
 import re
 from dash import callback, dcc, html
@@ -62,7 +62,7 @@ order = 8
 ##################################
 
 # colors for plotting different curves
-colors = px.colors.qualitative.Plotly
+colors = pcolors.qualitative.Plotly
 
 #######################################
 # set up general layout and callbacks #

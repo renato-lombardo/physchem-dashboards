@@ -3,7 +3,7 @@ import dash
 import dash_bootstrap_components as dbc
 import dash_daq as daq
 import pint
-import plotly.express as px
+import plotly.colors as pcolors
 import plotly.graph_objs as go
 import plotly.io as pio
 import re
@@ -49,7 +49,8 @@ order = 2
 # initialize units registry
 ureg = pint.UnitRegistry()
 # import colors list for plotly plots
-colors = px.colors.qualitative.Plotly
+colors = pcolors.qualitative.Plotly
+
 # generate labels for each molecule to use in the dashboard
 # label: for the dropdown widget, label2: for the plot legend
 for mol in molecules:

@@ -2,7 +2,7 @@ import numpy as np
 import dash
 import dash_bootstrap_components as dbc
 import dash_daq as daq
-import plotly.express as px
+import plotly.colors as pcolors
 import plotly.graph_objs as go
 import re
 from dash import callback, dcc, html
@@ -23,7 +23,7 @@ except Exception as e: # when running in a multipage dashboard
 # define translator function
 _ = gettext
 
-colors = px.colors.qualitative.Plotly
+colors = pcolors.qualitative.Plotly
 
 #########################
 # Dashboard information #
