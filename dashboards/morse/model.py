@@ -1,7 +1,15 @@
 import numpy as np
 import pint
-from scipy.constants import h, c, u
 import warnings
+
+# define needed physical constants
+# we could use scipy for this, but there is no need to have such big dependency
+# from scipy.constants import h, c, u
+
+h = 6.62607015e-34 # the Planck constant
+c = 299792458.0 # speed of light in vacuum
+u = 1.6605390666e-27 # atomic mass constant (in kg)
+
 
 # initialize units registry
 ureg = pint.UnitRegistry()

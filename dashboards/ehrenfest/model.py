@@ -3,7 +3,14 @@ import plotly.express as px
 import plotly.graph_objs as go
 from numpy.random import default_rng
 from plotly.subplots import make_subplots
-from scipy.stats import norm
+
+
+def normpdf(x, mean, sd):
+    ''' compute normal probability density function'''
+    var = sd**2
+    denom = (2*np.pi*var)**.5
+    num = np.exp(-(x-mean)**2/(2*var))
+    return num/denom
 
 
 def Ehrenfest(nA=10, nB=10, nsteps=100, width=100., height=100):
@@ -76,8 +83,8 @@ def Ehrenfest(nA=10, nB=10, nsteps=100, width=100., height=100):
         fluctuation.append(B.sum()-A.sum())
         # calculate new histogram with current data
         hist = np.histogram(fluctuation, bins=bins, density=True)
-        # fit a gaussian to the histogram
-        mu, std = norm.fit(fluctuation)
-        hist_fit = norm.pdf(hist[1], mu, std)
+        # fit a gaussian distribution to the histogram
+        fluct_arr = np.array(fluctuation)
+        hist_fit = normpdf(hist[1], fluct_arr.mean(), fluct_arr.std())
         yield X, Y, fA, fB, hist, hist_fit
     return

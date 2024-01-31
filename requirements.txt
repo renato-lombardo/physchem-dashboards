@@ -1,9 +1,10 @@
-dash==2.14.2
-dash_bootstrap_components==1.5.0
+dash==2.11.1
+dash==2.14.1
+dash_bootstrap_components==1.4.1
 dash_daq==0.5.0
-Flask==3.0.1
+Flask==2.2.5
 flask_babel==4.0.0
-numpy==1.26.3
+numpy==1.25.1
 Pint==0.23
 plotly==5.18.0
-scipy==1.12.0
+plotly==5.15.0
