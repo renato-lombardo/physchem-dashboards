@@ -1,5 +1,4 @@
 import numpy as np
-import plotly.express as px
 import plotly.graph_objs as go
 from numpy.random import default_rng
 from plotly.subplots import make_subplots
