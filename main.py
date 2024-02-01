@@ -24,11 +24,11 @@ def get_pages(blacklist='blacklist.txt'):
 
 dash_app = Dash('chemistry dashboards', use_pages=True,
            pages_folder='dashboards',
-           #external_stylesheets=[dbc.themes.BOOTSTRAP],
            suppress_callback_exceptions=True
             )
 
-# it is better to have the actual Flask app explicitly named "app" so that it can be run by some hosting services
+# it is better to have the actual Flask app explicitly named "app"
+# so that it can be run by some hosting services such as vercel
 
 app = dash_app.server # this is the actual Flask app
 
@@ -59,10 +59,7 @@ dash_app.layout = html.Div([nav_list,
               dash.page_container
              ])
 
-
-
 if __name__ == '__main__':
-#    app.run_server(debug=True, host='0.0.0.0', port=5000)
     app.run(debug=True)
     
     

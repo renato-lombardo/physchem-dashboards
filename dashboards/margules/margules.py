@@ -52,49 +52,10 @@ order = 4
 # set up general layout and callbacks #
 #######################################
 header, setup_language_general, show_info = common_setup(title, subtitle, info)
-"""
-def header():
-    title_html = html.H1(_(title), id='title')
-    subtitle_html = html.P(_(subtitle), id='subtitle')
-    info_button = dbc.Button(id='info-button', n_clicks=0, children='more info')
-    # a text area that support mathjax and Latex for equations
-    info_text = dcc.Markdown('   ', mathjax=True, id='info-text')
-    # put button and text area togheter
-    title_col = dbc.Col(dbc.Container([title_html, subtitle_html]), width='auto')
-    info_col = dbc.Col(dbc.Container([info_text, info_button]), width='auto')
-    #header = dbc.Row([title_col, info_col])
-    return dbc.Row([title_col, info_col])
-
-
-@callback([Output('title', 'children'),
-           Output('subtitle', 'children')
-           ],
-          [Input('title', 'children'),
-           Input('subtitle', 'children')
-          ])
-def setup_language_general(*messages):
-    return [_(m) for m in messages]
-
-
-@callback([Output('info-button', 'children'),
-               Output('info-text', 'children')],
-              Input('info-button', 'n_clicks')
-             )
-def show_info(n_clicks):
-    '''show a short information about the model '''
-    if n_clicks%2: # button pressed for an uneven number of times
-        text = _(info)
-        button_text = _('less info') # change the label
-    else: # clicked again after showing, means hide the info
-        text = '   '
-        button_text = _('more info')
-    return button_text, text
-"""
 
 ##########################
 # set up specific layout #
 ##########################
-
                         
 def controls_factory(uid):
     '''
@@ -234,7 +195,7 @@ def update_plot(beta_list, T_list, DG_list, DS_list, DH_list, minima_list, style
     x1_min_values = []
     x1_max_values = []
     for i, (beta, DG, DS, DH, minima, T, st) in enumerate(zip(beta_list, DG_list, DS_list, DH_list, minima_list, T_list, styles)):
-        if None in (beta, T): # values outside ranges 
+        if None in (beta, T): # values outside range
             return go.Figure(), {}
         color = colors[i%len(colors)]
         st['border-color'] = color
@@ -244,15 +205,15 @@ def update_plot(beta_list, T_list, DG_list, DS_list, DH_list, minima_list, style
         if DG:
             x, y = DG_mix(beta, T)
             y = y*0.001 # kJ/mol
-            data.append(go.Scatter(x=x, y=y, mode='lines', line=dict(color=color), name=f'\u0394G: \u03B2 {beta/1000:.1f} kJ/mol, {T} K')) 
+            data.append(go.Scatter(x=x, y=y, mode='lines', line=dict(color=color), name=f'\u0394G: \u03B2 {beta/1000:.1f} kJ/mol, {T} K', showlegend=True)) 
             if alpha>2:
                 idx = np.argsort(y)[:2]
             else:
                 idx = [int(len(x)/2)]
             x1_min_values.append(f'\u03C7\u2081 min = {x[idx][-1]:.3f}')
             x1_max_values.append(f'\u03C7\u2081 max = {x[idx][0]:.3f}')
-            if minima:
-                data.append(go.Scatter(x=x[idx], y=y[idx], mode='markers', marker_color='black', marker_symbol='circle-open', marker_size=10, showlegend=False))
+            if minima: # show minima on plot
+                data.append(go.Scatter(x=x[idx], y=y[idx], mode='markers', marker_color='black', marker_symbol='circle-open', marker_size=10, name='stable composition'))
         else:
             x1_min_values.append('\u03C7\u2081 min = --')
             x1_max_values.append('\u03C7\u2081 max = --')
@@ -260,11 +221,11 @@ def update_plot(beta_list, T_list, DG_list, DS_list, DH_list, minima_list, style
         if DS:
             x, y = DS_mix(T)
             y = y*0.001 # kJ/mol
-            data.append(go.Scatter(x=x, y=T*y, mode='lines', line=dict(color=color, dash='dash'), name=f'T\u0394S: \u03B2 {beta/1000:.1f} kJ/mol, {T} K'))
+            data.append(go.Scatter(x=x, y=T*y, mode='lines', line=dict(color=color, dash='dash'), name=f'T\u0394S: \u03B2 {beta/1000:.1f} kJ/mol, {T} K', showlegend=True))
         if DH:
             x, y = DH_mix(beta, T)
             y = y*0.001 # kJ/mol
-            data.append(go.Scatter(x=x, y=y, mode='lines', line=dict(color=color, dash='dashdot'), name=f'\u0394H: \u03B2 {beta/1000:.1f} kJ/mol, {T} K'))
+            data.append(go.Scatter(x=x, y=y, mode='lines', line=dict(color=color, dash='dashdot'), name=f'\u0394H: \u03B2 {beta/1000:.1f} kJ/mol, {T} K', showlegend=True))
         
     layout = {'xaxis': {'title': _('\u03C7\u2081'), 'range': (0,1)}, 'yaxis': {'title': _('Energy kJ/mol')}}
     return go.Figure(data=data, layout=layout), new_styles, x1_min_values, x1_max_values
