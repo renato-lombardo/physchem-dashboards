@@ -9,11 +9,11 @@ _ = gettext
 home_page = 'https://www.unipa.it/persone/docenti/l/renato.lombardo'
 uni_home_page = 'https://www.unipa.it'
 source = 'https://github.com/renato-lombardo/physchem-dashboards'
-licence =  'https://www.gnu.org/licenses/agpl-3.0.en.html'
+license =  'https://www.gnu.org/licenses/agpl-3.0.en.html'
 
 footer = html.Footer([html.A(_('source code'), href=source, target='_blank'),
                       ',  ',
-                     html.A(_('licence'), href=licence, target='_blank')])
+                     html.A(_('license'), href=license, target='_blank')])
 def layout():
     title_html = html.H1('Chemistry dashboards')
     description = html.H3(_('A small set of interactive dashboards to show the behavior of some models in chemistry'))
