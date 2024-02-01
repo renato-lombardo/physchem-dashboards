@@ -10,7 +10,7 @@ from dash import callback, dcc, html
 _ = gettext
 
 release_date = '2024'
-release = '0.1'
+release = '0.2'
 home_page = 'https://www.unipa.it/persone/docenti/l/renato.lombardo'
 source = 'https://github.com/renato-lombardo/physchem-dashboards'
 license =  'https://www.gnu.org/licenses/agpl-3.0.en.html'
