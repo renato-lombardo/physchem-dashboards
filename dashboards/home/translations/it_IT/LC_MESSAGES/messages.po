@@ -1,0 +1,38 @@
+# Italian (Italy) translations for PROJECT.
+# Copyright (C) 2024 ORGANIZATION
+# This file is distributed under the same license as the PROJECT project.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2024.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: PROJECT VERSION\n"
+"Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
+"POT-Creation-Date: 2024-02-01 15:33+0100\n"
+"PO-Revision-Date: 2024-02-01 15:33+0100\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: it_IT\n"
+"Language-Team: it_IT <LL@li.org>\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.13.1\n"
+
+#: home.py:14
+msgid "source code"
+msgstr "codice sorgente"
+
+#: home.py:16
+msgid "licence"
+msgstr "licenza"
+
+#: home.py:19
+msgid ""
+"A small set of interactive dashboards to show the behavior of some models"
+" in chemistry"
+msgstr "Un piccolo insieme di dashboard interattive per mostrare il comportamento di alcuni modelli in chimica"
+
+#: home.py:25
+msgid "University of Palermo"
+msgstr "Università degli Studi di Palermo"
+
