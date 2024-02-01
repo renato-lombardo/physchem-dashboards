@@ -39,44 +39,6 @@ order = 5
 # set up general layout and callbacks #
 #######################################
 header, setup_language_general, show_info = common_setup(title, subtitle, info)
-"""
-def header():
-    title_html = html.H1(_(title), id='title')
-    subtitle_html = html.P(_(subtitle), id='subtitle')
-    info_button = dbc.Button(id='info-button', n_clicks=0, children='more info')
-    # a text area that support mathjax and Latex for equations
-    info_text = dcc.Markdown('   ', mathjax=True, id='info-text')
-    # put button and text area togheter
-    title_col = dbc.Col(dbc.Container([title_html, subtitle_html]), width='auto')
-    info_col = dbc.Col(dbc.Container([info_text, info_button]), width='auto')
-    #header = dbc.Row([title_col, info_col])
-    return dbc.Row([title_col, info_col])
-
-
-@callback([Output('title', 'children'),
-           Output('subtitle', 'children')
-           ],
-          [Input('title', 'children'),
-           Input('subtitle', 'children')
-          ])
-def setup_language_general(*messages):
-    return [_(m) for m in messages]
-
-
-@callback([Output('info-button', 'children'),
-               Output('info-text', 'children')],
-              Input('info-button', 'n_clicks')
-             )
-def show_info(n_clicks):
-    '''show a short information about the model '''
-    if n_clicks%2: # button pressed for an uneven number of times
-        text = _(info)
-        button_text = _('less info') # change the label
-    else: # clicked again after showing, means hide the info
-        text = '   '
-        button_text = _('more info')
-    return button_text, text
-"""
 
 ##########################
 # set up specific layout #
