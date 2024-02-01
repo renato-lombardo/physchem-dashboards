@@ -6,14 +6,12 @@ from flask_babel import Babel, gettext
 # define translator function to use with flask_babel
 _ = gettext
 
+
 home_page = 'https://www.unipa.it/persone/docenti/l/renato.lombardo'
-uni_home_page = 'https://www.unipa.it'
+uni_home_page = 'https://wwww.unipa.it'
 source = 'https://github.com/renato-lombardo/physchem-dashboards'
 license =  'https://www.gnu.org/licenses/agpl-3.0.en.html'
 
-footer = html.Footer([html.A(_('source code'), href=source, target='_blank'),
-                      ',  ',
-                     html.A(_('license'), href=license, target='_blank')])
 def layout():
     title_html = html.H1('Chemistry dashboards')
     description = html.H3(_('A small set of interactive dashboards to show the behavior of some models in chemistry'))
@@ -23,7 +21,6 @@ def layout():
         description,
         html.H4(html.A('Renato Lombardo', href = home_page, target="_blank")),
         html.H4(html.A(_('University of Palermo'), href=uni_home_page, target="_blank")),
-        footer
     ])
     return layout
 

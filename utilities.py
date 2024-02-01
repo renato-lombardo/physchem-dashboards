@@ -4,6 +4,7 @@ import os
 from dash import callback, dcc, html
 from dash.dependencies import Input, Output, State, MATCH, ALL
 from flask_babel import Babel, gettext
+
 # define translator function to use with flask_babel
 _ = gettext
 
@@ -63,4 +64,5 @@ def common_setup(title, subtitle, info):
             text = '   '
             button_text = _('more info')
         return button_text, text
+    
     return header, setup_language_general, show_info
