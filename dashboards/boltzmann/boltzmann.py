@@ -198,7 +198,7 @@ def update_table(E, pop):
     remove energy E and sort table
     '''
     # sort list on E values
-    data = [{'energy': e, 'population': p } for e, p in sorted(zip(E, pop.magnitude))]
+    data = [{_id('energy'): e, _id('population'): p } for e, p in sorted(zip(E, pop.magnitude))]
     return data
 
 
