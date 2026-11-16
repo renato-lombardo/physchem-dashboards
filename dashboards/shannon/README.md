@@ -32,6 +32,9 @@ per singola lettera `-∑pᵢ log₂pᵢ`.
 
 ## Interfaccia
 
+- Il campo di testo aggiorna i risultati premendo Invio o uscendo dal campo,
+  evitando richieste per ogni battuta.
+- Su schermi larghi il pannello sinistro occupa 3 colonne su 12 (25%).
 - Due schede iniziali: `otto` e `atto`. Aggiunta e rimozione di ulteriori schede.
 - Esempi: `AAAAA`, `AMORE`, `TTAGGG`, `TTAGGGTTAGGG`, ecc.
 - Limite di 50 punti di codice Unicode nel testo inserito, prima dei filtri;
@@ -88,10 +91,11 @@ Sei test numerici e combinatori: riferimenti analitici, confronto indipendente
 con enumerazione esaustiva per stringhe corte, invarianza per riordinamento,
 Unicode e filtri, input invalidi, 50 caratteri e arresto a 24 microstati.
 
-Sei test di integrazione con l'app multipagina reale: caricamento pagina e CSS,
+Sette test di integrazione con l'app multipagina reale: caricamento pagina e CSS,
 traduzioni italiane, richieste HTTP alle callback di calcolo, filtri e scala,
 aggiunta/eliminazione/nuova aggiunta senza riuso degli ID, scelta degli esempi,
-input vuoti e troppo lunghi e confronto senza schede.
+input vuoti e troppo lunghi, confronto senza schede e nome completo
+`Renato Lombardo` (15 caratteri).
 
 Ambiente disponibile verificato: Python 3.12.1, Dash 2.14.2,
 dash-bootstrap-components 1.5.0 e Plotly 5.18.0 (`dash_apps`).

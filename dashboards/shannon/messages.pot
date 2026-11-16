@@ -9,7 +9,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: physchem-dashboards — Shannon 1.0\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2026-11-16 13:00+0100\n"
+"POT-Creation-Date: 2026-11-16 15:12+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -46,7 +46,7 @@ msgid ""
 "\n"
 msgstr ""
 
-#: shannon.py:76 shannon.py:269
+#: shannon.py:76 shannon.py:271
 #, python-format
 msgid "String %(number)s"
 msgstr ""
@@ -55,126 +55,126 @@ msgstr ""
 msgid "Delete"
 msgstr ""
 
-#: shannon.py:81 shannon.py:84
+#: shannon.py:81
 msgid "Text (maximum 50 characters)"
 msgstr ""
 
-#: shannon.py:90
+#: shannon.py:87
+msgid "Press Enter or leave the field to update the results."
+msgstr ""
+
+#: shannon.py:92
 msgid "Choose an example"
 msgstr ""
 
-#: shannon.py:100
+#: shannon.py:102
 msgid ""
 "Each string defines its own bag. W counts labelled microstates compatible"
 " with that exact visible string. I measures the information content of "
 "the exact sequence drawn at random, without replacement."
 msgstr ""
 
-#: shannon.py:107
+#: shannon.py:109
 msgid "Add string"
 msgstr ""
 
-#: shannon.py:110
+#: shannon.py:112
 msgid "Ignore case"
 msgstr ""
 
-#: shannon.py:111
+#: shannon.py:113
 msgid "Ignore whitespace"
 msgstr ""
 
-#: shannon.py:112
+#: shannon.py:114
 msgid "Ignore punctuation"
 msgstr ""
 
-#: shannon.py:114
+#: shannon.py:116
 msgid ""
 "Accents are preserved. Symbols are NFC-normalized Unicode code points; "
 "complex emoji may contain several symbols."
 msgstr ""
 
-#: shannon.py:126
+#: shannon.py:128
 msgid "Total"
 msgstr ""
 
-#: shannon.py:127
+#: shannon.py:129
 msgid "Per character"
 msgstr ""
 
-#: shannon.py:129
+#: shannon.py:131
 msgid ""
 "The two segments add up to log₂(N!). Equal-length strings have equal "
 "totals."
 msgstr ""
 
-#: shannon.py:133
+#: shannon.py:135
 msgid "Comparison"
 msgstr ""
 
-#: shannon.py:184
+#: shannon.py:186
 #, python-format
 msgid "Showing %(shown)s of %(total)s compatible microstates"
 msgstr ""
 
-#: shannon.py:186
+#: shannon.py:188
 msgid "Analysed string: "
 msgstr ""
 
-#: shannon.py:194
+#: shannon.py:196
 msgid "Information content: "
 msgstr ""
 
-#: shannon.py:198
+#: shannon.py:200
 msgid "Compatible microstates"
 msgstr ""
 
-#: shannon.py:200
+#: shannon.py:202
 msgid ""
 "Subscripts identify individual tiles; the visible character order never "
 "changes."
 msgstr ""
 
-#: shannon.py:208
+#: shannon.py:210
 msgid "String"
 msgstr ""
 
-#: shannon.py:208
+#: shannon.py:210
 msgid "Distinct symbols"
 msgstr ""
 
-#: shannon.py:209
+#: shannon.py:211
 msgid "Information content I (bit)"
 msgstr ""
 
-#: shannon.py:237
+#: shannon.py:239
 #, python-format
 msgid "%(number)s/50 characters"
 msgstr ""
 
-#: shannon.py:241
+#: shannon.py:243
 msgid "Maximum length: 50 characters."
 msgstr ""
 
-#: shannon.py:242
+#: shannon.py:244
 msgid "Enter a string with at least one retained character."
 msgstr ""
 
-#: shannon.py:256
-msgid "Hidden tile identities: log₂ W"
-msgstr ""
-
-#: shannon.py:258
+#: shannon.py:260
 msgid "Information content: I"
 msgstr ""
 
-#: shannon.py:273
+#: shannon.py:275
 msgid "Add a string to begin the comparison."
 msgstr ""
 
-#: shannon.py:277
+#: shannon.py:279
 msgid "bit / character"
 msgstr ""
 
-#: shannon.py:281
+#: shannon.py:283
 msgid "No valid strings to compare."
 msgstr ""
 

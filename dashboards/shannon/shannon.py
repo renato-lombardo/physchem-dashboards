@@ -80,10 +80,12 @@ def controls_card_factory(uid, text=''):
         ], align='center', className='mb-2'),
         dbc.Label(_('Text (maximum 50 characters)'), html_for=json.dumps(pid('text', uid), sort_keys=True, separators=(',', ':'))),
         # Pattern IDs are needed for callbacks; label the field accessibly too.
-        dcc.Textarea(id=pid('text', uid), value=text, maxLength=MAX_LENGTH,
-                     title=_('Text (maximum 50 characters)'),
-                     style={'width': '100%', 'minHeight': '75px',
+        dcc.Input(id=pid('text', uid), type='text', value=text,
+                  maxLength=MAX_LENGTH, debounce=True,
+                     style={'width': '100%', 'minHeight': '38px',
                             'fontFamily': 'monospace'}),
+        html.Small(_('Press Enter or leave the field to update the results.'),
+                   className='text-muted'),
         html.Div(id=pid('counter', uid), className='small text-muted mb-2'),
         dcc.Dropdown(id=pid('example', uid),
                      options=[{'label': text, 'value': text} for text in EXAMPLES],
@@ -120,7 +122,7 @@ def layout():
                 html.Div([controls_card_factory(0, 'otto'),
                           controls_card_factory(1, 'atto')],
                          id=_id('cards')),
-            ], xl=4),
+            ], lg=4, xl=3),
             dbc.Col([
                 dbc.RadioItems(id=_id('scale'), value='total', inline=True,
                                options=[{'label': _('Total'), 'value': 'total'},
@@ -132,7 +134,7 @@ def layout():
                     className='text-muted'),
                 html.H4(_('Comparison'), className='mt-4'),
                 html.Div(id=_id('comparison')),
-            ], xl=8),
+            ], lg=8, xl=9),
         ]),
     ], fluid=True, id=_id('layout'))
 
@@ -253,7 +255,7 @@ def update_results(texts, selected, scale, identifiers):
         shades = [color(uid) for uid, _ in rows]
         custom = [[r.text, r.length] for _, r in rows]
         for name, values, opacity, pattern in [
-            (_('Hidden tile identities: log₂ W'),
+            ('log₂ W',
              [r.hidden_bits / d for (_, r), d in zip(rows, divisors)], .4, '/'),
             (_('Information content: I'),
              [r.information_bits / d for (_, r), d in zip(rows, divisors)], 1, ''),
