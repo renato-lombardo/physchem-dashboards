@@ -1,0 +1,180 @@
+# Translations template for physchem-dashboards — Shannon.
+# Copyright (C) 2026 ORGANIZATION
+# This file is distributed under the same license as the physchem-dashboards
+# — Shannon project.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2026.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: physchem-dashboards — Shannon 1.0\n"
+"Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
+"POT-Creation-Date: 2026-11-16 13:00+0100\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.14.0\n"
+
+#: shannon.py:28
+msgid "Explore multiplicity, entropy and information in a string of tiles"
+msgstr ""
+
+#: shannon.py:29
+msgid ""
+"Put the tiles of each string into its own bag and draw all of them\n"
+"at random, without replacement. Individual tiles have hidden labels.\n"
+"The **macrostate** is the exact visible string; a **microstate** "
+"specifies\n"
+"the identities of all its tiles, in that order.\n"
+"\n"
+"$$W=\\prod_i n_i!,\\qquad S_B=k_B\\ln W$$\n"
+"\n"
+"All $N!$ labelled orders are equally likely. The probability of drawing\n"
+"the specified visible string is $P=W/N!$, so its **information content**,"
+" also called **surprisal**, is\n"
+"\n"
+"$$I=-\\log_2 P=\\log_2(N!/W).$$\n"
+"\n"
+"The stacked bars split $\\log_2(N!)$ into hidden tile identities\n"
+"($\\log_2 W$) and information content ($I$).\n"
+"In this uniform bag model, the Shannon entropy of the distribution of\n"
+"visible sequences equals $I$. This is not the single-letter expression\n"
+"$-\\sum_i p_i\\log_2p_i$.\n"
+"\n"
+msgstr ""
+
+#: shannon.py:76 shannon.py:269
+#, python-format
+msgid "String %(number)s"
+msgstr ""
+
+#: shannon.py:77
+msgid "Delete"
+msgstr ""
+
+#: shannon.py:81 shannon.py:84
+msgid "Text (maximum 50 characters)"
+msgstr ""
+
+#: shannon.py:90
+msgid "Choose an example"
+msgstr ""
+
+#: shannon.py:100
+msgid ""
+"Each string defines its own bag. W counts labelled microstates compatible"
+" with that exact visible string. I measures the information content of "
+"the exact sequence drawn at random, without replacement."
+msgstr ""
+
+#: shannon.py:107
+msgid "Add string"
+msgstr ""
+
+#: shannon.py:110
+msgid "Ignore case"
+msgstr ""
+
+#: shannon.py:111
+msgid "Ignore whitespace"
+msgstr ""
+
+#: shannon.py:112
+msgid "Ignore punctuation"
+msgstr ""
+
+#: shannon.py:114
+msgid ""
+"Accents are preserved. Symbols are NFC-normalized Unicode code points; "
+"complex emoji may contain several symbols."
+msgstr ""
+
+#: shannon.py:126
+msgid "Total"
+msgstr ""
+
+#: shannon.py:127
+msgid "Per character"
+msgstr ""
+
+#: shannon.py:129
+msgid ""
+"The two segments add up to log₂(N!). Equal-length strings have equal "
+"totals."
+msgstr ""
+
+#: shannon.py:133
+msgid "Comparison"
+msgstr ""
+
+#: shannon.py:184
+#, python-format
+msgid "Showing %(shown)s of %(total)s compatible microstates"
+msgstr ""
+
+#: shannon.py:186
+msgid "Analysed string: "
+msgstr ""
+
+#: shannon.py:194
+msgid "Information content: "
+msgstr ""
+
+#: shannon.py:198
+msgid "Compatible microstates"
+msgstr ""
+
+#: shannon.py:200
+msgid ""
+"Subscripts identify individual tiles; the visible character order never "
+"changes."
+msgstr ""
+
+#: shannon.py:208
+msgid "String"
+msgstr ""
+
+#: shannon.py:208
+msgid "Distinct symbols"
+msgstr ""
+
+#: shannon.py:209
+msgid "Information content I (bit)"
+msgstr ""
+
+#: shannon.py:237
+#, python-format
+msgid "%(number)s/50 characters"
+msgstr ""
+
+#: shannon.py:241
+msgid "Maximum length: 50 characters."
+msgstr ""
+
+#: shannon.py:242
+msgid "Enter a string with at least one retained character."
+msgstr ""
+
+#: shannon.py:256
+msgid "Hidden tile identities: log₂ W"
+msgstr ""
+
+#: shannon.py:258
+msgid "Information content: I"
+msgstr ""
+
+#: shannon.py:273
+msgid "Add a string to begin the comparison."
+msgstr ""
+
+#: shannon.py:277
+msgid "bit / character"
+msgstr ""
+
+#: shannon.py:281
+msgid "No valid strings to compare."
+msgstr ""
+

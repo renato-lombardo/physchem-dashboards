@@ -1,0 +1,217 @@
+# Italian (Italy) translations for physchem-dashboards — Shannon.
+# Copyright (C) 2026 ORGANIZATION
+# This file is distributed under the same license as the physchem-dashboards
+# — Shannon project.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2026.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: physchem-dashboards — Shannon 1.0\n"
+"Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
+"POT-Creation-Date: 2026-11-16 13:00+0100\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: it_IT\n"
+"Language-Team: it_IT <LL@li.org>\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.14.0\n"
+
+#: shannon.py:28
+msgid "Explore multiplicity, entropy and information in a string of tiles"
+msgstr "Esplora molteplicità, entropia e informazione in una stringa di tessere"
+
+#: shannon.py:29
+msgid ""
+"Put the tiles of each string into its own bag and draw all of them\n"
+"at random, without replacement. Individual tiles have hidden labels.\n"
+"The **macrostate** is the exact visible string; a **microstate** "
+"specifies\n"
+"the identities of all its tiles, in that order.\n"
+"\n"
+"$$W=\\prod_i n_i!,\\qquad S_B=k_B\\ln W$$\n"
+"\n"
+"All $N!$ labelled orders are equally likely. The probability of drawing\n"
+"the specified visible string is $P=W/N!$, so its **information content**,"
+" also called **surprisal**, is\n"
+"\n"
+"$$I=-\\log_2 P=\\log_2(N!/W).$$\n"
+"\n"
+"The stacked bars split $\\log_2(N!)$ into hidden tile identities\n"
+"($\\log_2 W$) and information content ($I$).\n"
+"In this uniform bag model, the Shannon entropy of the distribution of\n"
+"visible sequences equals $I$. This is not the single-letter expression\n"
+"$-\\sum_i p_i\\log_2p_i$.\n"
+"\n"
+msgstr ""
+"Metti le tessere di ciascuna stringa nel proprio sacchetto ed estraile\n"
+"tutte casualmente, senza reinserimento. Le singole tessere hanno "
+"etichette nascoste.\n"
+"Il **macrostato** è la precisa stringa visibile; un **microstato** "
+"specifica\n"
+"le identità di tutte le tessere, mantenendo quell’ordine.\n"
+"\n"
+"$$W=\\prod_i n_i!,\\qquad S_B=k_B\\ln W$$\n"
+"\n"
+"Tutti gli $N!$ ordini delle tessere etichettate sono equiprobabili. La "
+"probabilità\n"
+"di estrarre la stringa visibile richiesta è $P=W/N!$, quindi il suo "
+"**contenuto di informazione**, detto anche **sorpresa**, è\n"
+"\n"
+"$$I=-\\log_2 P=\\log_2(N!/W).$$\n"
+"\n"
+"Le barre impilate suddividono $\\log_2(N!)$ in identità nascoste delle "
+"tessere\n"
+"($\\log_2 W$) e contenuto di informazione ($I$).\n"
+"In questo modello uniforme del sacchetto, l’entropia di Shannon della "
+"distribuzione\n"
+"delle sequenze visibili coincide con $I$. Non è l’espressione per la "
+"singola lettera\n"
+"$-\\sum_i p_i\\log_2p_i$.\n"
+"\n"
+
+#: shannon.py:76 shannon.py:269
+#, python-format
+msgid "String %(number)s"
+msgstr "Stringa %(number)s"
+
+#: shannon.py:77
+msgid "Delete"
+msgstr "Elimina"
+
+#: shannon.py:81 shannon.py:84
+msgid "Text (maximum 50 characters)"
+msgstr "Testo (massimo 50 caratteri)"
+
+#: shannon.py:90
+msgid "Choose an example"
+msgstr "Scegli un esempio"
+
+#: shannon.py:100
+msgid ""
+"Each string defines its own bag. W counts labelled microstates compatible"
+" with that exact visible string. I measures the information content of "
+"the exact sequence drawn at random, without replacement."
+msgstr ""
+"Ogni stringa definisce il proprio sacchetto. W conta i microstati con "
+"tessere etichettate compatibili con quella precisa stringa visibile. I "
+"misura il contenuto di informazione della precisa sequenza estratta "
+"casualmente, senza reinserimento."
+
+#: shannon.py:107
+msgid "Add string"
+msgstr "Aggiungi stringa"
+
+#: shannon.py:110
+msgid "Ignore case"
+msgstr "Ignora maiuscole/minuscole"
+
+#: shannon.py:111
+msgid "Ignore whitespace"
+msgstr "Ignora spazi e caratteri di spaziatura"
+
+#: shannon.py:112
+msgid "Ignore punctuation"
+msgstr "Ignora punteggiatura"
+
+#: shannon.py:114
+msgid ""
+"Accents are preserved. Symbols are NFC-normalized Unicode code points; "
+"complex emoji may contain several symbols."
+msgstr ""
+"Gli accenti sono conservati. I simboli sono punti di codice Unicode "
+"normalizzati in NFC; le emoji complesse possono contenere più simboli."
+
+#: shannon.py:126
+msgid "Total"
+msgstr "Valori totali"
+
+#: shannon.py:127
+msgid "Per character"
+msgstr "Per carattere"
+
+#: shannon.py:129
+msgid ""
+"The two segments add up to log₂(N!). Equal-length strings have equal "
+"totals."
+msgstr ""
+"La somma dei due segmenti è log₂(N!). Stringhe della stessa lunghezza "
+"hanno lo stesso totale."
+
+#: shannon.py:133
+msgid "Comparison"
+msgstr "Confronto"
+
+#: shannon.py:184
+#, python-format
+msgid "Showing %(shown)s of %(total)s compatible microstates"
+msgstr "Mostrati %(shown)s dei %(total)s microstati compatibili"
+
+#: shannon.py:186
+msgid "Analysed string: "
+msgstr "Stringa analizzata: "
+
+#: shannon.py:194
+msgid "Information content: "
+msgstr "Contenuto di informazione: "
+
+#: shannon.py:198
+msgid "Compatible microstates"
+msgstr "Microstati compatibili"
+
+#: shannon.py:200
+msgid ""
+"Subscripts identify individual tiles; the visible character order never "
+"changes."
+msgstr ""
+"I pedici identificano le singole tessere; l’ordine visibile dei caratteri"
+" non cambia mai."
+
+#: shannon.py:208
+msgid "String"
+msgstr "Stringa"
+
+#: shannon.py:208
+msgid "Distinct symbols"
+msgstr "Simboli distinti"
+
+#: shannon.py:209
+msgid "Information content I (bit)"
+msgstr "Contenuto di informazione I (bit)"
+
+#: shannon.py:237
+#, python-format
+msgid "%(number)s/50 characters"
+msgstr "%(number)s/50 caratteri"
+
+#: shannon.py:241
+msgid "Maximum length: 50 characters."
+msgstr "Lunghezza massima: 50 caratteri."
+
+#: shannon.py:242
+msgid "Enter a string with at least one retained character."
+msgstr "Inserisci una stringa con almeno un carattere non escluso dalle opzioni."
+
+#: shannon.py:256
+msgid "Hidden tile identities: log₂ W"
+msgstr "Identità nascoste delle tessere: log₂ W"
+
+#: shannon.py:258
+msgid "Information content: I"
+msgstr "Contenuto di informazione: I"
+
+#: shannon.py:273
+msgid "Add a string to begin the comparison."
+msgstr "Aggiungi una stringa per iniziare il confronto."
+
+#: shannon.py:277
+msgid "bit / character"
+msgstr "bit / carattere"
+
+#: shannon.py:281
+msgid "No valid strings to compare."
+msgstr "Nessuna stringa valida da confrontare."
+
